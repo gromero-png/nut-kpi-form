@@ -897,7 +897,7 @@ async function submitData() {
           G_nero: item.sexo,
           Valor: item.valor,
           Comentario: item.comment,
-          Fecha_Envio: new Date().toISOString(),
+          Fecha_Envio: new Date().toISOString().split(".")[0] + "Z",
           Entidad: email
         }});
         const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items`, { method:"POST", headers, body });
