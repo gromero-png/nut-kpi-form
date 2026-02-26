@@ -504,7 +504,7 @@ const msalConfig = {
   auth: { 
     clientId: CLIENT_ID, 
     authority: `https://login.microsoftonline.com/${TENANT_ID}`, 
-    redirectUri: "https://victorious-moss-0a959381e.1.azurestaticapps.net",
+    redirectUri: "https://gromero-png.github.io/nut-kpi-form",
     navigateToLoginRequestUrl: false
   },
   cache: { cacheLocation: "sessionStorage" },
@@ -520,7 +520,7 @@ async function doLogin() {
   try {
     await msalInstance.loginRedirect({
       ...loginRequest,
-      redirectUri: "https://victorious-moss-0a959381e.1.azurestaticapps.net/"
+      redirectUri: "https://gromero-png.github.io/nut-kpi-form"
     });
   } catch(e) { showToast("Erreur de connexion: " + e.message, "error"); }
 }
