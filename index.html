@@ -843,7 +843,7 @@ function clearAll() {
 }
 
 // ── SUBMIT ──
-async function submitData() {   if(!currentUser) {      showToast("Connectez-vous d'abord", "error");      return;    }    const proyecto = document.getElementById("proyecto").value;   const periodo  = document.getElementById("periodo").value;   const anio     = document.getElementById("anio").value;   const email    = currentUser.username;    const items = [];   KPI_LIST.forEach(k => {     if(k.kind === "parent") return;      const femEl = document.querySelector(`input.fem[data-code="${k.code}"]`);     const masEl = document.querySelector(`input.mas[data-code="${k.code}"]`);     const totEl = document.querySelector(`input.tot[data-code="${k.code}"]`);     const comEl = document.querySelector(`input.comment[data-code="${k.code}"]`);     const comment = comEl?.value || "";      if(femEl && femEl.value !== "") {       items.push({ code: k.code, indicador: k.label, desag: k.desag, sexo: "Féminin", valor: parseFloat(femEl.value), comment });     }     if(masEl && masEl.value !== "" && k.sex === "FM") {       items.push({ code: k.code, indicador: k.label, desag: k.desag, sexo: "Masculin", valor: parseFloat(masEl.value), comment });     }     if(totEl && totEl.value !== "") {       items.push({ code: k.code, indicador: k.label, desag: k.desag, sexo: "N/A", valor: parseFloat(totEl.value), comment });     }   });    if(!items.length) {      showToast("Aucune valeur saisie", "error");      return;    }    const btn = document.getElementById("submitBtn");   btn.disabled = true;   btn.textContent = "⏳ Envoi en cours...";    try {     await getSharePointIds();     const token = await getToken();     const headers = {        Authorization: "Bearer " + token,        "Content-Type": "application/json"      };      let ok = 0;     let fail = 0;      for(const item of items) {       const body = JSON.stringify({         fields: {           Title: item.code,           Indicador: item.indicador,           Tipo_Indicador: item.code.startsWith("KOI") ? "KOI" :                           item.code.startsWith("KII") ? "KII" :                           item.code.startsWith("KPI-P") ? "KPI-P" : "KPI",           Proyecto: proyecto,           Periodo: periodo,           A_o: parseInt(anio),           Desgregaci_n: item.desag,           G_nero: item.sexo,           Valor: item.valor,           Comentario: item.comment,           Fecha_Envio: new Date().toISOString(),           Entidad: email         }       });        const r = await fetch(         `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items`,         { method:"POST", headers, body }       );        if(r.ok) ok++;       else fail++;     }      if(fail === 0) {       showToast(`✓ ${ok} valeurs envoyées`, "success");     } else {       showToast(`${ok} OK · ${fail} erreurs`, "error");       btn.disabled = false;       btn.textContent = "↑ Envoyer à SharePoint";     }    } catch(e) {     showToast("Erreur: " + e.message, "error");     btn.disabled = false;     btn.textContent = "↑ Envoyer à SharePoint";   } }
+async function submitData() {
   if(!currentUser) { showToast("Connectez-vous d'abord", "error"); return; }
 
   const proyecto = document.getElementById("proyecto").value;
@@ -892,7 +892,7 @@ async function submitData() {   if(!currentUser) {      showToast("Connectez-vou
           Tipo_Indicador: item.code.startsWith("KOI") ? "KOI" : item.code.startsWith("KII") ? "KII" : item.code.startsWith("KPI-P") ? "KPI-P" : "KPI",
           Proyecto: proyecto,
           Periodo: periodo,
-          A_o: parseInt(anio),
+          A_o: anio,
           Desgregaci_n: item.desag,
           G_nero: item.sexo,
           Valor: item.valor,
@@ -901,9 +901,7 @@ async function submitData() {   if(!currentUser) {      showToast("Connectez-vou
           Entidad: email
         }});
         const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items`, { method:"POST", headers, body });
-        if (r.ok) {   ok++; } else {   const err = await r.text();   alert("ERROR GRAPH:
-
-" + err);   fail++; }
+        if(r.ok) ok++; else fail++;
       } catch { fail++; }
     }
 
