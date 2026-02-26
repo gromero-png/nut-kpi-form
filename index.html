@@ -892,7 +892,7 @@ async function submitData() {
           Tipo_Indicador: item.code.startsWith("KOI") ? "KOI" : item.code.startsWith("KII") ? "KII" : item.code.startsWith("KPI-P") ? "KPI-P" : "KPI",
           Proyecto: proyecto,
           Periodo: periodo,
-          A_o: parseInt(anio),
+          A_o: anio,
           Desgregaci_n: item.desag,
           G_nero: item.sexo,
           Valor: item.valor,
