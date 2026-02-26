@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NUT KPI · Saisie des données</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+<style>
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #f8f9fb;
+  --border: #e2e5ea;
+  --accent: #1a4a8a;
+  --accent2: #2563c4;
+  --accent-light: #e8effd;
+  --green: #0e7c4a;
+  --green-light: #e6f4ee;
+  --orange: #b45309;
+  --orange-light: #fef3e2;
+  --purple: #6b3fa0;
+  --purple-light: #f0eaff;
+  --red: #c0392b;
+  --text: #1a1d23;
+  --text2: #4a5568;
+  --text3: #8a95a3;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--accent);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,.15);
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-logo {
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: .01em;
+}
+.topbar-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  font-weight: 400;
+}
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,.8);
+  font-size: 13px;
+}
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+#loginBtn {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+#loginBtn:hover { background: rgba(255,255,255,.25); }
+
+/* ── MAIN LAYOUT ── */
+.main { max-width: 1280px; margin: 0 auto; padding: 28px 24px 80px; }
+
+/* ── CONTEXT CARD ── */
+.context-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.context-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 16px;
+}
+.context-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+.field-group { display: flex; flex-direction: column; gap: 6px; }
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: .02em;
+}
+.field-select, .field-input {
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface2);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a95a3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  transition: border-color .15s, box-shadow .15s;
+  cursor: pointer;
+}
+.field-input { background-image: none; padding-right: 12px; }
+.field-select:focus, .field-input:focus {
+  outline: none;
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(37,99,196,.12);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 28px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.progress-label { font-size: 13px; color: var(--text2); white-space: nowrap; }
+.progress-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--accent2); border-radius: 99px; transition: width .3s; }
+.progress-count { font-size: 13px; font-weight: 600; color: var(--accent2); white-space: nowrap; font-family: 'DM Mono', monospace; }
+
+/* ── SECTION HEADERS ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 8px;
+  margin: 8px 0 0;
+  cursor: pointer;
+  user-select: none;
+}
+.section-pill {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.pill-kpi  { background: var(--accent-light); color: var(--accent); }
+.pill-koi  { background: var(--green-light); color: var(--green); }
+.pill-kii  { background: var(--orange-light); color: var(--orange); }
+.pill-kpip { background: var(--purple-light); color: var(--purple); }
+
+.section-name { font-size: 14px; font-weight: 600; color: var(--text2); }
+.section-count { font-size: 12px; color: var(--text3); margin-left: auto; }
+.section-chevron { color: var(--text3); transition: transform .2s; font-size: 12px; }
+.section-header.collapsed .section-chevron { transform: rotate(-90deg); }
+
+/* ── TABLE ── */
+.table-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.table-wrap.collapsed { display: none; }
+
+table { border-collapse: collapse; width: 100%; }
+thead th {
+  background: var(--accent);
+  color: rgba(255,255,255,.9);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 11px 14px;
+  text-align: left;
+  position: static;
+}
+thead th:nth-child(4), thead th:nth-child(5), thead th:nth-child(6) { text-align: center; }
+
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr.row-parent {
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+tbody tr.row-parent td { font-weight: 600; font-size: 12px; color: var(--text2); padding: 8px 14px; }
+tbody tr.row-child td { padding: 7px 14px; font-size: 13px; }
+tbody tr.row-child:hover { background: #fafbfd; }
+tbody tr.row-filled { background: #f0fdf6; }
+tbody tr.row-filled:hover { background: #e8fbf0; }
+
+td.code-cell {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent2);
+  white-space: nowrap;
+  width: 90px;
+}
+td.ind-cell { color: var(--text); max-width: 340px; }
+td.ind-cell.sub { padding-left: 28px; color: var(--text2); }
+td.desag-cell {
+  font-size: 12px;
+  color: var(--text3);
+  width: 160px;
+}
+td.val-cell { text-align: center; width: 120px; }
+td.val-cell.na {
+  color: var(--text3);
+  font-size: 12px;
+  font-style: italic;
+}
+
+input.num {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  text-align: center;
+  color: var(--text);
+  background: var(--surface2);
+  transition: border-color .15s, box-shadow .15s;
+}
+input.num:focus {
+  outline: none;
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(37,99,196,.12);
+  background: #fff;
+}
+input.num.filled {
+  border-color: #22c55e;
+  background: #f0fdf4;
+  color: var(--green);
+}
+input.num.total-auto {
+  background: var(--surface2);
+  color: var(--text3);
+  cursor: default;
+  font-weight: 500;
+}
+input.num:disabled {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
+/* ── SUBMIT AREA ── */
+.submit-area {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+}
+.submit-info { font-size: 13px; color: var(--text2); }
+.submit-info strong { color: var(--text); }
+.submit-btns { display: flex; gap: 10px; }
+
+.btn {
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1.5px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,74,138,.25); }
+.btn-primary:disabled { background: var(--text3); cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-success { background: var(--green); color: #fff; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 72px; right: 24px;
+  background: var(--text);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 999;
+  transform: translateX(120%);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  max-width: 360px;
+}
+.toast.show { transform: translateX(0); }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* ── STATUS BADGE ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-offline { background: var(--orange-light); color: var(--orange); }
+.badge-online { background: var(--green-light); color: var(--green); }
+
+/* ── COMMENT ── */
+td.comment-cell { width: 180px; }
+input.comment {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text2);
+  background: var(--surface2);
+}
+input.comment:focus { outline: none; border-color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">🌿</div>
+    <div>
+      <div class="topbar-title">NUT · Saisie des données KPI</div>
+      <div class="topbar-sub">Système de collecte · nouscims.com</div>
+    </div>
+  </div>
+  <div class="topbar-user">
+    <span id="statusBadge" class="status-badge badge-offline">⚠ Non connecté</span>
+    <div id="userInfo" style="display:none">
+      <div class="user-avatar" id="userInitials">?</div>
+    </div>
+    <button id="loginBtn" onclick="doLogin()">Se connecter</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CONTEXT CARD -->
+  <div class="context-card">
+    <div class="context-title">Contexte de saisie</div>
+    <div class="context-grid">
+      <div class="field-group">
+        <label class="field-label">Projet</label>
+        <select class="field-select" id="proyecto" onchange="updateContext()">
+          <option value="ACDEV">ACDEV</option>
+          <option value="Toubabs">Toubabs</option>
+          <option value="Sinergias">Sinergias</option>
+          <option value="Semilla">Semilla</option>
+          <option value="Baylor">Baylor</option>
+          <option value="CRECER">CRECER</option>
+          <option value="Agora">Agora</option>
+          <option value="EVE">EVE</option>
+          <option value="ACDEV-Nouveau">ACDEV-Nouveau Proj</option>
+          <option value="DEUK-PLAN">DEUK-PLAN</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Période</label>
+        <select class="field-select" id="periodo" onchange="updateContext()">
+          <option value="Avril">Avril</option>
+          <option value="Novembre">Novembre</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Année</label>
+        <select class="field-select" id="anio" onchange="updateContext()">
+          <option value="2024">2024</option>
+          <option value="2025" selected>2025</option>
+          <option value="2026">2026</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Saisi par</label>
+        <input class="field-input" id="userEmail" readonly placeholder="Connectez-vous pour continuer" style="color:var(--text3)"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-card">
+    <span class="progress-label">Progression</span>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+    <span class="progress-count" id="progressCount">0 / 0 remplis</span>
+  </div>
+
+  <!-- TABLE SECTIONS -->
+  <div id="tableContainer"></div>
+
+</div>
+
+<!-- SUBMIT BAR -->
+<div class="submit-area">
+  <div class="submit-info">
+    <strong id="submitContext">—</strong>
+    <span id="submitFilled"> · 0 valeurs saisies</span>
+  </div>
+  <div class="submit-btns">
+    <button class="btn btn-secondary" onclick="clearAll()">✕ Effacer tout</button>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitData()" disabled>
+      ↑ Envoyer à SharePoint
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const CLIENT_ID   = "4d58f8ab-d60f-4148-9b27-fff46a86a8e9";
+const TENANT_ID   = "85aa2518-831e-4380-97ae-4f8db03f9a3b";
+const SITE_URL    = "https://nouscims0.sharepoint.com/sites/DG-DATA";
+const LIST_NAME   = "NUT_KPI_DataCollection";
+
+const msalConfig = {
+  auth: { 
+    clientId: CLIENT_ID, 
+    authority: `https://login.microsoftonline.com/${TENANT_ID}`, 
+    redirectUri: "https://victorious-moss-0a959381e.1.azurestaticapps.net",
+    navigateToLoginRequestUrl: false
+  },
+  cache: { cacheLocation: "sessionStorage" },
+  system: { allowNativeBroker: false }
+};
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+const loginRequest = { scopes: ["https://graph.microsoft.com/Sites.ReadWrite.All"] };
+
+let currentUser = null;
+let siteId = null, listId = null;
+
+async function doLogin() {
+  try {
+    await msalInstance.loginRedirect({
+      ...loginRequest,
+      redirectUri: "https://victorious-moss-0a959381e.1.azurestaticapps.net/"
+    });
+  } catch(e) { showToast("Erreur de connexion: " + e.message, "error"); }
+}
+
+function onLogin() {
+  document.getElementById("loginBtn").style.display = "none";
+  document.getElementById("userInfo").style.display = "flex";
+  document.getElementById("userEmail").value = currentUser.username;
+  document.getElementById("userInitials").textContent = currentUser.name?.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase() || "?";
+  document.getElementById("statusBadge").className = "status-badge badge-online";
+  document.getElementById("statusBadge").textContent = "✓ Connecté";
+  document.getElementById("submitBtn").disabled = false;
+  showToast("Bienvenue " + currentUser.name, "success");
+}
+
+async function getToken() {
+  const accounts = msalInstance.getAllAccounts();
+  if(!accounts.length) throw new Error("Non connecté");
+  return (await msalInstance.acquireTokenSilent({ ...loginRequest, account: accounts[0] })).accessToken;
+}
+
+async function getSharePointIds() {
+  if(siteId && listId) return;
+  const token = await getToken();
+  const headers = { Authorization: "Bearer " + token };
+  const hostname = "nouscims0.sharepoint.com";
+  const sitePath = "/sites/DG-DATA";
+  const siteResp = await fetch(`https://graph.microsoft.com/v1.0/sites/${hostname}:${sitePath}`, { headers });
+  const siteData = await siteResp.json();
+  siteId = siteData.id;
+  const listResp = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists?$filter=displayName eq '${LIST_NAME}'`, { headers });
+  const listData = await listResp.json();
+  listId = listData.value[0]?.id;
+  if(!listId) throw new Error("Liste introuvable: " + LIST_NAME);
+}
+
+// ── KPI DATA ──
+const SECTIONS = [
+  { id: "kpi", label: "KPI — Indicateurs de performance", pill: "KPI", pillClass: "pill-kpi" },
+  { id: "koi", label: "KOI — Indicateurs de résultats", pill: "KOI", pillClass: "pill-koi" },
+  { id: "kii", label: "KII — Indicateurs d'impact", pill: "KII", pillClass: "pill-kii" },
+  { id: "kpip", label: "KPI-P — Indicateurs projet", pill: "KPI-P", pillClass: "pill-kpip" },
+];
+
+const KPI_LIST = [
+  {s:"kpi",code:"GKPI1",label:"Nombre TOTAL de PERSONNES directement impactées par le Programme (ayant bénéficié d\'au moins une des activités/services du projet)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI2",label:"Nombre d\'enfants directement impactés par le programme (ayant bénéficié d\'au moins une des activités/services du projet)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI2.1",label:"Nombre d\'enfants directement impactés",desag:"0-2 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI2.2",label:"Nombre d\'enfants directement impactés",desag:"2-5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI2.3",label:"Nombre d\'enfants directement impactés",desag:"> 5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI3",label:"Nombre d\'enfants dépistés (dépistage anthropométrique: P/T & PB) pendant le projet (âge : 0-5/>5 ans)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI3.1",label:"Nombre d\'enfants dépistés",desag:"0-2 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI3.2",label:"Nombre d\'enfants dépistés",desag:"2-5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI3.3",label:"Nombre d\'enfants dépistés",desag:">5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI4",label:"Nombre d\'enfants âgés de 0 à 5 ans dépistés atteints de malnutrition aiguë (modérée MAM / sévère MAS)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI4.1",label:"Malnutrition aiguë",desag:"MAM",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI4.2",label:"Malnutrition aiguë",desag:"MAS",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI5",label:"Nombre d\'enfants de 0 à 5 ans atteints de MAM référés au projet depuis les structures sanitaires",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI5.1",label:"Enfants référés",desag:"MAM",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI5.2",label:"Enfants référés",desag:"MAS",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI6",label:"Nombre d\'enfants dépistés entre 0 et 5 ans atteints de malnutrition chronique",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI6.1",label:"Malnutrition chronique",desag:"0 à 2 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI6.2",label:"Malnutrition chronique",desag:"2 à 5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI7",label:"Nombre d\'enfants entre 0 et 5 ans atteints de malnutrition chronique qui bénéficient d\'un soutien nutritionnel",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI7.1",label:"Soutien nutritionnel",desag:"0 à 2 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI7.2",label:"Soutien nutritionnel",desag:"2 à 5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI8",label:"Nombre d\'enfants dépistés présentant une insuffisance pondérale (Poids pour âge ou IMC pour âge)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI8.1",label:"Insuffisance pondérale",desag:"0 à 2 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI8.2",label:"Insuffisance pondérale",desag:"2 à 5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI8.3",label:"Insuffisance pondérale",desag:">5 Ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI9",label:"Nombre d\'enfants (0-5/>5 ans) ayant bénéficié d\'une mesure d\'hémoglobine au cours du projet",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI9.1",label:"Mesure d\'hémoglobine",desag:"0 à 5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI9.2",label:"Mesure d\'hémoglobine",desag:">5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI10",label:"Nombre d\'enfants (0-5/>5 ans) dépistés souffrant d\'anémie (hémoglobine <110 g/L)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI10.1",label:"Anémie",desag:"0 à 5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI10.2",label:"Anémie",desag:">5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI11",label:"Nombre d\'enfants (6-59 mois/>5 ans) ayant reçu des suppléments de fer — doses préventives",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI11.1",label:"Suppléments fer préventifs",desag:"6 à 59 mois",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI11.2",label:"Suppléments fer préventifs",desag:">5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI12",label:"Nombre d\'enfants (6-59/>5 ans) ayant reçu des suppléments de fer — doses curatives",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI12.1",label:"Suppléments fer curatifs",desag:"6 à 59 mois",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI12.2",label:"Suppléments fer curatifs",desag:">5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI13",label:"Nombre d\'enfants âgés de 12 à 59 mois ayant reçu des médicaments antiparasitaires",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI14",label:"Nombre d\'enfants (0-5 ans) ayant bénéficié de visites à domicile pour un suivi nutrition/santé",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI15",label:"Nombre d\'enfants (6-59/>5 ans) ayant reçu un soutien alimentaire direct grâce au Projet",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI15.1",label:"Soutien alimentaire",desag:"6-24 mois",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI15.2",label:"Soutien alimentaire",desag:"2-5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI15.3",label:"Soutien alimentaire",desag:">5 ans",kind:"child",sex:"FM"},
+  {s:"kpi",code:"KPI16",label:"Nombre de Femmes (Gardiens/ennes, Pères) directement impactées par le Programme",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI17",label:"Nombre de Femmes ayant bénéficié d\'un dépistage anthropométrique/PB (enceintes/allaitantes/NENA)",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI17.1",label:"Dépistage anthropométrique",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI17.2",label:"Dépistage anthropométrique",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI17.3",label:"Dépistage anthropométrique",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI18",label:"Nombre de Femmes ayant bénéficié d\'un test d\'hémoglobine (E/A/NENA)",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI18.1",label:"Test d\'hémoglobine",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI18.2",label:"Test d\'hémoglobine",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI18.3",label:"Test d\'hémoglobine",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI19",label:"Nombre de femmes (E/A/NENA) ayant reçu un soutien alimentaire direct",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI19.1",label:"Soutien alimentaire",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI19.2",label:"Soutien alimentaire",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI19.3",label:"Soutien alimentaire",desag:"en âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI20",label:"Nombre de femmes (E/A/NENA) dépistées atteintes de malnutrition (insuffisance pondérale-aiguë)",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI20.1",label:"Malnutrition femmes",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI20.2",label:"Malnutrition femmes",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI20.3",label:"Malnutrition femmes",desag:"en âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI21",label:"Nombre de femmes (E/A/NENA) dépistées atteintes d\'anémie",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI21.1",label:"Anémie femmes",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI21.2",label:"Anémie femmes",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI21.3",label:"Anémie femmes",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI22",label:"Nombre de femmes (E/A/NENA) ayant reçu des suppléments de fer — doses préventives",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI22.1",label:"Suppléments fer préventifs",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI22.2",label:"Suppléments fer préventifs",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI22.3",label:"Suppléments fer préventifs",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI23",label:"Nombre de femmes (E/A/NENA) ayant reçu des suppléments de fer — doses curatives",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI23.1",label:"Suppléments fer curatifs",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI23.2",label:"Suppléments fer curatifs",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI23.3",label:"Suppléments fer curatifs",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpi",code:"KPI24",label:"Nombre de femmes ayant reçu des médicaments antiparasitaires pendant la grossesse",desag:"enceinte",kind:"single",sex:"F"},
+  {s:"kpi",code:"KPI25",label:"Nombre de mères/gardiennes/ens d\'enfants participant aux activités de production alimentaire pour l\'autoconsommation",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI26",label:"Nombre de mères/gardiennes/ens d\'enfants ayant participé à des activités de formation pour renforcer leurs compétences entrepreneuriales",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI27",label:"Nombre de mères/gardiennes/ens d\'enfants ayant bénéficié d\'un crédit pour renforcer ou démarrer une AGR",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI28",label:"Nombre de mères/gardiennes/ens d\'enfants ayant démarré et/ou renforcé une AGR grâce au programme",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI29",label:"Nombre de mères - gardien/ennes - pères ayant bénéficié d\'activités de formation sur les bonnes pratiques de nutrition, santé, hygiène et soins",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI30",label:"Nombre de personnes parmi les acteurs communautaires et/ou professionnels de santé formés (PCIME/C)",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI31",label:"Nombre de visites à domicile de suivi nutrition/santé réalisées",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI32",label:"Nombre d\'activités de formation et/ou de sensibilisation réalisées",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI33",label:"Nombre d\'ateliers d\'entrepreneuriat/agronomie/autres réalisés",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"GKPI2",label:"Degré de satisfaction des mères - gardien/ennes - pères sur l\'accompagnement du projet",desag:"",kind:"parent_text",sex:"T"},
+  {s:"kpi",code:"GKPI2.1",label:"Satisfaction bénéficiaires",desag:"4. TRÈS satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"GKPI2.2",label:"Satisfaction bénéficiaires",desag:"3. ASSEZ satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"GKPI2.3",label:"Satisfaction bénéficiaires",desag:"2. PEU satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"GKPI2.4",label:"Satisfaction bénéficiaires",desag:"1. PAS DU TOUT satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI35",label:"Degré de satisfaction des acteurs communautaires concernant la formation reçue",desag:"",kind:"parent_text",sex:"T"},
+  {s:"kpi",code:"KPI35.1",label:"Satisfaction acteurs communautaires",desag:"4. TRÈS satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI35.2",label:"Satisfaction acteurs communautaires",desag:"3. ASSEZ satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI35.3",label:"Satisfaction acteurs communautaires",desag:"2. PEU satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI35.4",label:"Satisfaction acteurs communautaires",desag:"1. PAS DU TOUT satisfait",kind:"single",sex:"T"},
+  {s:"kpi",code:"GKPI3",label:"Nombre et type d\'entités qui participent et/ou collaborent à la mise en œuvre du projet",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE1",label:"Nombre d\'enfants (0-59 mois) traités ou référés pour malnutrition aiguë qui se rétablissent",desag:"",kind:"parent",sex:"FM"},
+  {s:"koi",code:"KOIE1.1",label:"Rétablissement malnutrition aiguë",desag:"MAM",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOIE1.2",label:"Rétablissement malnutrition aiguë",desag:"MAS",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOIE2",label:"Durée moyenne de rétablissement pour les enfants MAM-MAS guéris âgés de 6 à 59 mois (en jours)",desag:"",kind:"parent",sex:"T"},
+  {s:"koi",code:"KOIE2.1",label:"Durée moyenne rétablissement",desag:"MAM (jours)",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE2.2",label:"Durée moyenne rétablissement",desag:"MAS (jours)",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3",label:"Nombre d\'enfants (0-59 mois) traités pour malnutrition aiguë qui abandonnent le traitement",desag:"",kind:"parent",sex:"T"},
+  {s:"koi",code:"KOIE3.1",label:"Abandon traitement",desag:"Déplacement de la famille",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3.2",label:"Abandon traitement",desag:"Contraintes de transport et distance géographique",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3.3",label:"Abandon traitement",desag:"Manque de compréhension du traitement par les parents",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3.4",label:"Abandon traitement",desag:"AUTRE (préciser dans les commentaires)",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE4",label:"Nombre d\'enfants (0-59 mois) référés pour malnutrition aiguë qui n\'ont pas été traités",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE5",label:"Nombre d\'enfants (0-59 mois) atteints de malnutrition aiguë qui décèdent après avoir commencé le traitement",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE6",label:"Nombre d\'enfants (0-59 mois) qui rechutent à la malnutrition aiguë et sont réadmis dans le projet",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE7",label:"Nombre de femmes enceintes identifiées comme ayant un faible poids gestationnel qui se rétablissent",desag:"",kind:"single",sex:"F"},
+  {s:"koi",code:"KOIE8",label:"Nombre d\'enfants présentant une insuffisance pondérale qui se rétablissent",desag:"",kind:"parent",sex:"FM"},
+  {s:"koi",code:"KOI8.1",label:"Insuffisance pondérale rétablis",desag:"0 à 2 ans",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOI8.2",label:"Insuffisance pondérale rétablis",desag:"2 à 5 ans",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOI8.3",label:"Insuffisance pondérale rétablis",desag:">5 Ans",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOIE9",label:"Nombre de familles qui ont reproduit des jardins dans leurs maisons",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE10",label:"Nombre moyen de produits cultivés par les ménages pour leur propre consommation",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE11",label:"Pourcentage de mères bénéficiaires qui déclarent avoir obtenu un revenu complémentaire grâce à l\'AGI",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII1",label:"Pourcentage d\'enfants âgés de 0 à 59 mois présentant un retard de croissance (malnutrition chronique)",desag:"",kind:"parent",sex:"T"},
+  {s:"kii",code:"KII1.1",label:"% retard de croissance",desag:"0-2 ans",kind:"child",sex:"T"},
+  {s:"kii",code:"KII1.2",label:"% retard de croissance",desag:"2-5 ans",kind:"child",sex:"T"},
+  {s:"kii",code:"KII2",label:"Pourcentage d\'enfants âgés de 0 à 59 mois souffrant d\'émaciation (malnutrition aiguë)",desag:"",kind:"parent",sex:"T"},
+  {s:"kii",code:"KII2.1",label:"% émaciation",desag:"MAM",kind:"child",sex:"T"},
+  {s:"kii",code:"KII2.2",label:"% émaciation",desag:"MAS",kind:"child",sex:"T"},
+  {s:"kii",code:"KII3",label:"Pourcentage d\'enfants de 0 à 6 mois bénéficiant d\'un allaitement exclusif",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII4",label:"Pourcentage de nouveau-nés qui sont allaités dans la première heure de vie",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII5",label:"Pourcentage d\'enfants de 6 à 23 mois qui reçoivent un apport alimentaire minimum acceptable",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII6",label:"Pourcentage de mères/gardiens/pères appliquant les bonnes pratiques de lavage des mains (4 moments clés)",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII7",label:"Score de diversité alimentaire à domicile (HDDS: Household Dietary Diversity Score)",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII8",label:"Pourcentage d\'enfants âgés de 6 à 59 mois souffrant d\'anémie",desag:"",kind:"parent",sex:"T"},
+  {s:"kii",code:"KII8.1",label:"% anémie enfants",desag:"0-2 ans",kind:"child",sex:"T"},
+  {s:"kii",code:"KII8.2",label:"% anémie enfants",desag:"2-5 ans",kind:"child",sex:"T"},
+  {s:"kii",code:"KII9",label:"Pourcentage de femmes (E/A/NENA) souffrant d\'anémie",desag:"",kind:"parent",sex:"F"},
+  {s:"kii",code:"KII9.1",label:"% anémie femmes",desag:"enceinte",kind:"child",sex:"F"},
+  {s:"kii",code:"KII9.2",label:"% anémie femmes",desag:"allaitantes",kind:"child",sex:"F"},
+  {s:"kii",code:"KII9.3",label:"% anémie femmes",desag:"en âge de procréer (NENA)",kind:"child",sex:"F"},
+  {s:"kpip",code:"KPI-P1",label:"Révisions Scolaires",desag:"",kind:"single",sex:"T"},
+  {s:"kpip",code:"KPI-P2",label:"Bourses santé",desag:"",kind:"single",sex:"T"},
+];
+
+// ── RENDER ──
+function buildTable() {
+  const container = document.getElementById("tableContainer");
+  container.innerHTML = "";
+
+  SECTIONS.forEach(sec => {
+    const rows = KPI_LIST.filter(k => k.s === sec.id);
+    if(!rows.length) return;
+
+    const editableRows = rows.filter(k => k.kind !== "parent");
+
+    // Section header
+    const hdr = document.createElement("div");
+    hdr.className = "section-header";
+    hdr.dataset.section = sec.id;
+    hdr.innerHTML = `
+      <span class="section-pill ${sec.pillClass}">${sec.pill}</span>
+      <span class="section-name">${sec.label}</span>
+      <span class="section-count">${editableRows.length} indicateurs</span>
+      <span class="section-chevron">▼</span>
+    `;
+    hdr.onclick = () => toggleSection(sec.id);
+    container.appendChild(hdr);
+
+    // Table
+    const wrap = document.createElement("div");
+    wrap.className = "table-wrap";
+    wrap.id = "section-" + sec.id;
+
+    let html = `<table><thead><tr>
+      <th style="width:90px">Code</th>
+      <th>Indicateur</th>
+      <th style="width:150px">Désagrégation</th>
+      <th style="width:110px">Féminin</th>
+      <th style="width:110px">Masculin</th>
+      <th style="width:110px">Total</th>
+      <th style="width:170px">Commentaire</th>
+    </tr></thead><tbody>`;
+
+    rows.forEach((k, i) => {
+      const isEditable = k.kind !== "parent";
+      const rowClass = k.kind === "parent" ? "row-parent" : "row-child";
+      const indClass = k.kind === "child" ? "sub" : "";
+
+      let femCell, masCell, totCell;
+      if(!isEditable) {
+        femCell = masCell = totCell = "";
+      } else if(k.sex === "FM") {
+        femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-sex="F" oninput="calcTotal(this)" onchange="markFilled(this)">`;
+        masCell = `<input class="num mas" type="number" min="0" data-code="${k.code}" data-sex="M" oninput="calcTotal(this)" onchange="markFilled(this)">`;
+        totCell = `<input class="num total-auto" type="number" data-code="${k.code}" readonly tabindex="-1">`;
+      } else if(k.sex === "F") {
+        femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-sex="F" onchange="markFilled(this)">`;
+        masCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">N/A</span>`;
+        totCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">auto</span>`;
+      } else {
+        femCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">N/A</span>`;
+        masCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">N/A</span>`;
+        totCell = `<input class="num tot" type="number" min="0" data-code="${k.code}" data-sex="T" onchange="markFilled(this)">`;
+      }
+      const commentCell = isEditable ? `<input class="comment" type="text" placeholder="Commentaire..." data-code="${k.code}">` : "";
+
+      html += `<tr class="${rowClass}" id="row-${k.code.replace(/[^a-zA-Z0-9]/g,'-')}">
+        <td class="code-cell">${k.code}</td>
+        <td class="ind-cell ${indClass}">${k.label}</td>
+        <td class="desag-cell">${k.desag || ""}</td>
+        <td class="val-cell">${femCell}</td>
+        <td class="val-cell">${masCell}</td>
+        <td class="val-cell">${totCell}</td>
+        <td class="comment-cell">${commentCell}</td>
+      </tr>`;
+    });
+
+    html += "</tbody></table>";
+    wrap.innerHTML = html;
+    container.appendChild(wrap);
+  });
+
+  updateProgress();
+}
+
+function toggleSection(id) {
+  const wrap = document.getElementById("section-" + id);
+  const hdr = document.querySelector(`[data-section="${id}"]`);
+  wrap.classList.toggle("collapsed");
+  hdr.classList.toggle("collapsed");
+}
+
+function calcTotal(input) {
+  const code = input.dataset.code;
+  const fem = document.querySelector(`input.fem[data-code="${code}"]`);
+  const mas = document.querySelector(`input.mas[data-code="${code}"]`);
+  const tot = document.querySelector(`input.total-auto[data-code="${code}"]`);
+  if(tot) {
+    const f = fem && fem.value !== "" ? parseFloat(fem.value) : 0;
+    const m = mas && mas.value !== "" ? parseFloat(mas.value) : 0;
+    tot.value = f + m;
+  }
+  markFilled(input);
+  updateProgress();
+}
+
+function markFilled(input) {
+  if(input.value !== "" && input.value !== null) {
+    input.classList.add("filled");
+    input.closest("tr")?.classList.add("row-filled");
+  } else {
+    input.classList.remove("filled");
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const allInputs = document.querySelectorAll("input.num:not(.total-auto):not([readonly])");
+  const filled = [...allInputs].filter(i => i.value !== "").length;
+  const total = allInputs.length;
+  const pct = total ? Math.round(filled/total*100) : 0;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressCount").textContent = `${filled} / ${total} remplis`;
+  const ctx = document.getElementById("proyecto").value + " · " + document.getElementById("periodo").value + " " + document.getElementById("anio").value;
+  document.getElementById("submitContext").textContent = ctx;
+  document.getElementById("submitFilled").textContent = ` · ${filled} valeurs saisies`;
+}
+
+function updateContext() { updateProgress(); }
+
+function clearAll() {
+  if(!confirm("Effacer toutes les valeurs saisies ?")) return;
+  document.querySelectorAll("input.num, input.comment").forEach(i => { i.value = ""; i.classList.remove("filled"); });
+  document.querySelectorAll("tr.row-filled").forEach(r => r.classList.remove("row-filled"));
+  updateProgress();
+}
+
+// ── SUBMIT ──
+async function submitData() {
+  if(!currentUser) { showToast("Connectez-vous d'abord", "error"); return; }
+
+  const proyecto = document.getElementById("proyecto").value;
+  const periodo  = document.getElementById("periodo").value;
+  const anio     = document.getElementById("anio").value;
+  const email    = currentUser.username;
+
+  // Collect filled rows
+  const items = [];
+  KPI_LIST.forEach(k => {
+    if(k.kind === "parent") return;
+    const femEl = document.querySelector(`input.fem[data-code="${k.code}"]`);
+    const masEl = document.querySelector(`input.mas[data-code="${k.code}"]`);
+    const totEl = document.querySelector(`input.tot[data-code="${k.code}"]`);
+    const comEl = document.querySelector(`input.comment[data-code="${k.code}"]`);
+    const comment = comEl?.value || "";
+
+    if(femEl && femEl.value !== "") {
+      items.push({ code: k.code, indicador: k.label, desag: k.desag, sexo: "Féminin", valor: parseFloat(femEl.value), comment });
+    }
+    if(masEl && masEl.value !== "" && k.sex === "FM") {
+      items.push({ code: k.code, indicador: k.label, desag: k.desag, sexo: "Masculin", valor: parseFloat(masEl.value), comment });
+    }
+    if(totEl && totEl.value !== "") {
+      items.push({ code: k.code, indicador: k.label, desag: k.desag, sexo: "N/A", valor: parseFloat(totEl.value), comment });
+    }
+  });
+
+  if(!items.length) { showToast("Aucune valeur saisie", "error"); return; }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Envoi en cours...";
+
+  try {
+    await getSharePointIds();
+    const token = await getToken();
+    const headers = { Authorization: "Bearer " + token, "Content-Type": "application/json" };
+
+    let ok = 0, fail = 0;
+    for(const item of items) {
+      try {
+        const body = JSON.stringify({ fields: {
+          Title: item.code,
+          Indicador: item.indicador,
+          Tipo_Indicador: item.code.startsWith("KOI") ? "KOI" : item.code.startsWith("KII") ? "KII" : item.code.startsWith("KPI-P") ? "KPI-P" : "KPI",
+          Proyecto: proyecto,
+          Periodo: periodo,
+          A_o: parseInt(anio),
+          Desgregaci_n: item.desag,
+          G_nero: item.sexo,
+          Valor: item.valor,
+          Comentario: item.comment,
+          Fecha_Envio: new Date().toISOString(),
+          Entidad: email
+        }});
+        const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items`, { method:"POST", headers, body });
+        if(r.ok) ok++; else fail++;
+      } catch { fail++; }
+    }
+
+    if(fail === 0) {
+      showToast(`✓ ${ok} valeurs envoyées avec succès !`, "success");
+      btn.className = "btn btn-success";
+      btn.textContent = `✓ ${ok} valeurs enregistrées`;
+    } else {
+      showToast(`${ok} OK · ${fail} erreurs`, "error");
+      btn.disabled = false;
+      btn.textContent = "↑ Envoyer à SharePoint";
+    }
+  } catch(e) {
+    showToast("Erreur: " + e.message, "error");
+    btn.disabled = false;
+    btn.textContent = "↑ Envoyer à SharePoint";
+  }
+}
+
+function showToast(msg, type="") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  setTimeout(() => t.classList.remove("show"), 4000);
+}
+
+// ── INIT ──
+buildTable();
+updateProgress();
+
+// Handle redirect after login
+msalInstance.handleRedirectPromise().then(resp => {
+  if(resp?.account) { currentUser = resp.account; onLogin(); }
+  else {
+    const accounts = msalInstance.getAllAccounts();
+    if(accounts.length) { currentUser = accounts[0]; onLogin(); }
+  }
+}).catch(e => showToast("Erreur: " + e.message, "error"));
+</script>
+</body>
+</html>
