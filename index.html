@@ -901,7 +901,9 @@ async function submitData() {
           Entidad: email
         }});
         const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items`, { method:"POST", headers, body });
-        if(r.ok) ok++; else fail++;
+        if (r.ok) {   ok++; } else {   const err = await r.text();   alert("ERROR GRAPH:
+
+" + err);   fail++; }
       } catch { fail++; }
     }
 
