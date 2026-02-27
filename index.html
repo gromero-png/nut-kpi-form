@@ -519,7 +519,7 @@ const msalInstance = new msal.PublicClientApplication(msalConfig);
 /**
  * ✅ Scope correcto para MSAL v2 (no uses la URL completa)
  */
-const loginRequest = { scopes: ["Sites.ReadWrite.All"] };
+const loginRequest = { scopes: ["https://graph.microsoft.com/Sites.ReadWrite.All"] };
 
 let currentUser = null;
 let siteId = null, listId = null;
