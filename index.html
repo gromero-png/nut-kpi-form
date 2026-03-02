@@ -887,17 +887,17 @@ async function submitData() {
     for(const item of items) {
       try {
         const body = JSON.stringify({ fields: {
-          Title: item.code,
-          Indicador: item.indicador,
-          Tipo_Indicador: item.code.startsWith("KOI") ? "KOI" : item.code.startsWith("KII") ? "KII" : item.code.startsWith("KPI-P") ? "KPI-P" : "KPI",
-          Proyecto: proyecto,
+         Title: item.code,
+          field_1: item.indicador,
+          field_2: item.code.startsWith("KOI") ? "KOI" : item.code.startsWith("KII") ? "KII" : item.code.startsWith("KPI-P") ? "KPI-P" : "KPI",
+          field_3: proyecto,
           Periodo: periodo,
-          A_o: parseInt(anio),
+          field_4: parseInt(anio),
           Desgregaci_n: item.desag,
-          G_nero: item.sexo,
-          Valor: item.valor,
+          field_6: item.sexo,
+          field_7: item.valor,
           Comentario: item.comment,
-          Fecha_Envio: new Date().toISOString().split(".")[0] + "Z",
+          Fecha_Evento: new Date().toISOString().split(".")[0] + "Z",
           Entidad: email
         }});
         const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items`, { method:"POST", headers, body });
