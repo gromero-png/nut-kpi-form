@@ -10,7 +10,11 @@ const LIST_ID = "247ff344-20d5-4433-bdfa-fde5fd8b8b23";
 function getToken(cb) {
   const body = `grant_type=client_credentials&client_id=${CLIENT_ID}&client_secret=${encodeURIComponent(CLIENT_SECRET)}&scope=https://graph.microsoft.com/.default`;
   const req = https.request({ hostname: "login.microsoftonline.com", path: `/${TENANT_ID}/oauth2/v2.0/token`, method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" } }, res => {
-    let d = ""; res.on("data", c => d += c); res.on("end", () => cb(JSON.parse(d).access_token));
+    let d = ""; res.on("data", c => d += c); res.on("end", () => {
+      const parsed = JSON.parse(d);
+      console.log("TOKEN RESPONSE:", parsed.access_token ? "OK" : JSON.stringify(parsed));
+      cb(parsed.access_token);
+    });
   });
   req.write(body); req.end();
 }
@@ -18,7 +22,10 @@ function getToken(cb) {
 function postItem(token, fields, cb) {
   const body = JSON.stringify({ fields });
   const req = https.request({ hostname: "graph.microsoft.com", path: `/v1.0/sites/${SITE_ID}/lists/${LIST_ID}/items`, method: "POST", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) } }, res => {
-    let d = ""; res.on("data", c => d += c); res.on("end", () => cb(res.statusCode, d));
+    let d = ""; res.on("data", c => d += c); res.on("end", () => {
+      console.log("SHAREPOINT STATUS:", res.statusCode, d.substring(0, 300));
+      cb(res.statusCode, d);
+    });
   });
   req.write(body); req.end();
 }
@@ -33,6 +40,7 @@ http.createServer((req, res) => {
     req.on("end", () => {
       const items = JSON.parse(body);
       getToken(token => {
+        if(!token) { res.writeHead(500); res.end(JSON.stringify({ok:0,fail:items.length})); return; }
         let ok = 0, fail = 0, done = 0;
         items.forEach(fields => {
           postItem(token, fields, (status) => {
