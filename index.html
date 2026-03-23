@@ -4,187 +4,145 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NUT KPI · Saisie des données</title>
+<title>KPI · Saisie des données</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #f0f2f5;
-  --surface: #ffffff;
-  --surface2: #f8f9fb;
-  --border: #e2e5ea;
-  --accent: #1a4a8a;
-  --accent2: #2563c4;
-  --accent-light: #e8effd;
-  --green: #0e7c4a;
-  --green-light: #e6f4ee;
-  --orange: #b45309;
-  --orange-light: #fef3e2;
-  --purple: #6b3fa0;
-  --purple-light: #f0eaff;
-  --red: #c0392b;
-  --text: #1a1d23;
-  --text2: #4a5568;
-  --text3: #8a95a3;
-  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
-  --shadow-lg: 0 4px 24px rgba(0,0,0,.1);
-  --radius: 12px;
-  --radius-sm: 8px;
+  --bg:#f0f2f5; --surface:#fff; --surface2:#f8f9fb; --border:#e2e5ea;
+  --accent:#1a4a8a; --accent2:#2563c4; --accent-light:#e8effd;
+  --green:#0e7c4a; --green-light:#e6f4ee;
+  --orange:#b45309; --orange-light:#fef3e2;
+  --purple:#6b3fa0; --purple-light:#f0eaff;
+  --teal:#0e7a7c; --teal-light:#e6f4f4;
+  --red:#c0392b; --text:#1a1d23; --text2:#4a5568; --text3:#8a95a3;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --radius:12px; --radius-sm:8px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-.topbar {
-  background: var(--accent); padding: 0 32px; height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.15);
-}
-.topbar-brand { display: flex; align-items: center; gap: 12px; }
-.topbar-logo { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.topbar-title { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: .01em; }
-.topbar-sub { font-size: 12px; color: rgba(255,255,255,.6); font-weight: 400; }
-
-.main { max-width: 1280px; margin: 0 auto; padding: 28px 24px 80px; }
-
-.context-card {
-  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 24px 28px; margin-bottom: 20px; border: 1px solid var(--border);
-}
-.context-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px; }
-.context-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; align-items: end; }
-.field-group { display: flex; flex-direction: column; gap: 6px; }
-.field-label { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: .02em; }
-.field-select, .field-input {
-  padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  font-family: inherit; font-size: 14px; color: var(--text); background: var(--surface2);
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a95a3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
-  transition: border-color .15s, box-shadow .15s; cursor: pointer;
-}
-.field-input { background-image: none; padding-right: 12px; }
-.field-select:focus, .field-input:focus { outline: none; border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(37,99,196,.12); }
-
-.autosave { font-size: 11px; color: var(--text3); margin-top: 4px; min-height: 16px; }
-.autosave.saved { color: var(--green); }
-
-.progress-card {
-  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 16px 28px; margin-bottom: 20px; border: 1px solid var(--border);
-  display: flex; align-items: center; gap: 20px;
-}
-.progress-label { font-size: 13px; color: var(--text2); white-space: nowrap; }
-.progress-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: var(--accent2); border-radius: 99px; transition: width .3s; }
-.progress-count { font-size: 13px; font-weight: 600; color: var(--accent2); white-space: nowrap; font-family: 'DM Mono', monospace; }
-
-.blocked-banner {
-  background: var(--green-light); border: 1.5px solid var(--green);
-  border-radius: var(--radius); padding: 20px 28px; margin-bottom: 20px;
-  display: none; align-items: center; gap: 16px;
-}
-.blocked-banner.show { display: flex; }
-.blocked-icon { font-size: 32px; }
-.blocked-text h3 { font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
-.blocked-text p { font-size: 13px; color: var(--text2); }
-
-.section-header { display: flex; align-items: center; gap: 10px; padding: 10px 0 8px; margin: 8px 0 0; cursor: pointer; user-select: none; }
-.section-pill { padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-.pill-kpi  { background: var(--accent-light); color: var(--accent); }
-.pill-koi  { background: var(--green-light); color: var(--green); }
-.pill-kii  { background: var(--orange-light); color: var(--orange); }
-.pill-kpip { background: var(--purple-light); color: var(--purple); }
-.section-name { font-size: 14px; font-weight: 600; color: var(--text2); }
-.section-count { font-size: 12px; color: var(--text3); margin-left: auto; }
-.section-chevron { color: var(--text3); transition: transform .2s; font-size: 12px; }
-.section-header.collapsed .section-chevron { transform: rotate(-90deg); }
-
-.table-wrap { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; margin-bottom: 8px; }
-.table-wrap.collapsed { display: none; }
-table { border-collapse: collapse; width: 100%; }
-thead th { background: var(--accent); color: rgba(255,255,255,.9); font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 11px 14px; text-align: left; }
-thead th:nth-child(4), thead th:nth-child(5), thead th:nth-child(6) { text-align: center; }
-tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr.row-parent { background: var(--surface2); border-top: 1px solid var(--border); }
-tbody tr.row-parent td { font-weight: 600; font-size: 12px; color: var(--text2); padding: 8px 14px; }
-tbody tr.row-child td { padding: 7px 14px; font-size: 13px; }
-tbody tr.row-child:hover { background: #fafbfd; }
-tbody tr.row-filled { background: #f0fdf6; }
-tbody tr.row-filled:hover { background: #e8fbf0; }
-td.code-cell { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: var(--accent2); white-space: nowrap; width: 90px; }
-td.ind-cell { color: var(--text); max-width: 340px; }
-td.ind-cell.sub { padding-left: 28px; color: var(--text2); }
-td.desag-cell { font-size: 12px; color: var(--text3); width: 160px; }
-td.val-cell { text-align: center; width: 120px; }
-input.num { width: 90px; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 13px; text-align: center; color: var(--text); background: var(--surface2); transition: border-color .15s, box-shadow .15s; }
-input.num:focus { outline: none; border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(37,99,196,.12); background: #fff; }
-input.num.filled { border-color: #22c55e; background: #f0fdf4; color: var(--green); }
-input.num.total-auto { background: var(--surface2); color: var(--text3); cursor: default; font-weight: 500; }
-input.num:disabled { background: transparent; border-color: transparent; cursor: default; }
-td.comment-cell { width: 180px; }
-input.comment { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--text2); background: var(--surface2); }
-input.comment:focus { outline: none; border-color: var(--accent2); }
-
-.submit-area {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
-  border-top: 1px solid var(--border); padding: 16px 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  z-index: 50; box-shadow: 0 -4px 20px rgba(0,0,0,.06);
-}
-.submit-info { font-size: 13px; color: var(--text2); }
-.submit-info strong { color: var(--text); }
-.submit-btns { display: flex; gap: 10px; }
-.btn { padding: 10px 22px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; display: flex; align-items: center; gap: 7px; }
-.btn-secondary { background: var(--surface2); color: var(--text2); border: 1.5px solid var(--border); }
-.btn-secondary:hover { background: var(--border); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,74,138,.25); }
-.btn-primary:disabled { background: var(--text3); cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-success { background: var(--green); color: #fff; }
-
-.toast { position: fixed; top: 72px; right: 24px; background: var(--text); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: var(--shadow-lg); z-index: 999; transform: translateX(120%); transition: transform .3s cubic-bezier(.34,1.56,.64,1); max-width: 360px; }
-.toast.show { transform: translateX(0); }
-.toast.success { background: var(--green); }
-.toast.error { background: var(--red); }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--accent);padding:0 32px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.topbar-logo{width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.topbar-title{font-size:15px;font-weight:600;color:#fff}
+.topbar-sub{font-size:12px;color:rgba(255,255,255,.6)}
+.main{max-width:1300px;margin:0 auto;padding:28px 24px 90px}
+.context-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 28px;margin-bottom:20px;border:1px solid var(--border)}
+.context-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+.context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end}
+.field-group{display:flex;flex-direction:column;gap:6px}
+.field-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.02em}
+.field-select,.field-input{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;color:var(--text);background:var(--surface2);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a95a3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;transition:border-color .15s,box-shadow .15s;cursor:pointer}
+.field-input{background-image:none;padding-right:12px}
+.field-select:focus,.field-input:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(37,99,196,.12)}
+.autosave{font-size:11px;color:var(--text3);margin-top:4px;min-height:16px}
+.autosave.saved{color:var(--green)}
+.program-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.program-tab{padding:9px 20px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--surface);color:var(--text2);transition:all .15s;white-space:nowrap}
+.program-tab:hover{border-color:var(--accent2);color:var(--accent2)}
+.program-tab.active.nut{background:var(--accent);border-color:var(--accent);color:#fff}
+.program-tab.active.edu-pikine{background:var(--green);border-color:var(--green);color:#fff}
+.program-tab.active.edu-sl{background:var(--teal);border-color:var(--teal);color:#fff}
+.program-tab.active.ocu-pikine{background:var(--orange);border-color:var(--orange);color:#fff}
+.program-tab.active.ocu-sl{background:var(--purple);border-color:var(--purple);color:#fff}
+.program-tab.hidden{display:none}
+.progress-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 24px;margin-bottom:20px;border:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.progress-label{font-size:13px;color:var(--text2);white-space:nowrap}
+.progress-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--accent2);border-radius:99px;transition:width .3s}
+.progress-count{font-size:13px;font-weight:600;color:var(--accent2);white-space:nowrap;font-family:'DM Mono',monospace}
+.blocked-banner{background:var(--green-light);border:1.5px solid var(--green);border-radius:var(--radius);padding:18px 24px;margin-bottom:20px;display:none;align-items:center;gap:16px}
+.blocked-banner.show{display:flex}
+.blocked-icon{font-size:28px}
+.blocked-text h3{font-size:15px;font-weight:700;color:var(--green)}
+.blocked-text p{font-size:13px;color:var(--text2);margin-top:3px}
+.section-header{display:flex;align-items:center;gap:10px;padding:10px 0 8px;margin:8px 0 0;cursor:pointer;user-select:none}
+.section-pill{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.pill-kpi{background:var(--accent-light);color:var(--accent)}
+.pill-koi{background:var(--green-light);color:var(--green)}
+.pill-kii{background:var(--orange-light);color:var(--orange)}
+.pill-kpip{background:var(--purple-light);color:var(--purple)}
+.pill-gen{background:var(--teal-light);color:var(--teal)}
+.section-name{font-size:14px;font-weight:600;color:var(--text2)}
+.section-count{font-size:12px;color:var(--text3);margin-left:auto}
+.section-chevron{color:var(--text3);transition:transform .2s;font-size:12px}
+.section-header.collapsed .section-chevron{transform:rotate(-90deg)}
+.table-wrap{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:8px}
+.table-wrap.collapsed{display:none}
+table{border-collapse:collapse;width:100%}
+thead th{background:var(--accent);color:rgba(255,255,255,.9);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:10px 12px;text-align:left}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr.row-parent td{background:var(--surface2);font-weight:600;font-size:12px;color:var(--text2);padding:8px 12px;border-top:1px solid var(--border)}
+tbody tr.row-child td{padding:7px 12px;font-size:13px}
+tbody tr.row-child:hover{background:#fafbfd}
+tbody tr.row-filled{background:#f0fdf6}
+td.code-cell{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--accent2);white-space:nowrap;width:80px}
+td.ind-cell{color:var(--text);max-width:320px}
+td.ind-cell.sub{padding-left:26px;color:var(--text2)}
+td.desag-cell{font-size:12px;color:var(--text3);width:150px}
+td.val-cell{text-align:center;width:105px}
+td.comment-cell{width:160px}
+input.num{width:85px;padding:6px 8px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Mono',monospace;font-size:13px;text-align:center;color:var(--text);background:var(--surface2);transition:border-color .15s,box-shadow .15s}
+input.num:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(37,99,196,.12);background:#fff}
+input.num.filled{border-color:#22c55e;background:#f0fdf4;color:var(--green)}
+input.num[readonly]{background:var(--surface2);color:var(--text3);cursor:default}
+input.num:disabled{background:transparent;border-color:transparent;cursor:default}
+input.comment{width:100%;padding:6px 8px;border:1.5px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;color:var(--text2);background:var(--surface2)}
+input.comment:focus{outline:none;border-color:var(--accent2)}
+.na-cell{color:var(--text3);font-size:12px;font-style:italic;display:block;text-align:center}
+.submit-area{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;z-index:50;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+.submit-info{font-size:13px;color:var(--text2)}
+.submit-info strong{color:var(--text)}
+.submit-btns{display:flex;gap:10px}
+.btn{padding:9px 20px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:flex;align-items:center;gap:7px}
+.btn-secondary{background:var(--surface2);color:var(--text2);border:1.5px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,74,138,.25)}
+.btn-primary:disabled{background:var(--text3);cursor:not-allowed;transform:none;box-shadow:none}
+.toast{position:fixed;top:68px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 4px 24px rgba(0,0,0,.1);z-index:999;transform:translateX(120%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-width:360px}
+.toast.show{transform:translateX(0)}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+.no-program{text-align:center;padding:60px 24px;color:var(--text3);font-size:15px}
 </style>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-brand">
-    <div class="topbar-logo">🌿</div>
-    <div>
-      <div class="topbar-title">NUT · Saisie des données KPI</div>
-      <div class="topbar-sub">Système de collecte · nouscims.com</div>
-    </div>
+  <div class="topbar-logo">🌿</div>
+  <div>
+    <div class="topbar-title">Saisie des données KPI</div>
+    <div class="topbar-sub">Nous Cims · Système de collecte</div>
   </div>
 </div>
 
 <div class="main">
-
   <div class="context-card">
     <div class="context-title">Contexte de saisie</div>
     <div class="context-grid">
       <div class="field-group">
-        <label class="field-label">Entité (votre organisation)</label>
-        <input class="field-input" id="entidad" placeholder="Nom de votre organisation" oninput="autoSave()"/>
-        <span class="autosave" id="autosaveMsg"></span>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Projet</label>
-        <select class="field-select" id="proyecto" onchange="onContextChange()">
+        <label class="field-label">Votre entité</label>
+        <select class="field-select" id="entidad" onchange="onEntityChange()">
+          <option value="">— Sélectionnez votre entité —</option>
           <option value="ACDEV">ACDEV</option>
-          <option value="Toubabs">Toubabs</option>
-          <option value="Sinergias">Sinergias</option>
-          <option value="Semilla">Semilla</option>
-          <option value="Baylor">Baylor</option>
-          <option value="CRECER">CRECER</option>
+          <option value="Africa Feliz">Africa Feliz</option>
           <option value="Agora">Agora</option>
+          <option value="Caritas">Caritas</option>
+          <option value="Diapalanté">Diapalanté</option>
+          <option value="ECOPN">ECOPN</option>
+          <option value="EDEN">EDEN</option>
+          <option value="Écoles Pies">Écoles Pies</option>
           <option value="EVE">EVE</option>
-          <option value="ACDEV-Nouveau">ACDEV-Nouveau Proj</option>
-          <option value="DEUK-PLAN">DEUK-PLAN</option>
+          <option value="Forut">Forut</option>
+          <option value="GPES">GPES</option>
+          <option value="Maison de la Gare">Maison de la Gare</option>
+          <option value="Médicos del Mundo">Médicos del Mundo</option>
+          <option value="Plan+Deukendo">Plan+Deukendo</option>
+          <option value="Senegal Academy">Senegal Academy</option>
+          <option value="Simplon">Simplon</option>
+          <option value="Toubabs">Toubabs</option>
+          <option value="ULDLR">ULDLR</option>
         </select>
+        <span class="autosave" id="autosaveMsg"></span>
       </div>
       <div class="field-group">
         <label class="field-label">Période</label>
@@ -201,18 +159,27 @@ input.comment:focus { outline: none; border-color: var(--accent2); }
           <option value="2026">2026</option>
         </select>
       </div>
+      <div class="field-group" id="zoneGroup" style="display:none">
+        <label class="field-label">Zone (EVE)</label>
+        <select class="field-select" id="zone" onchange="onZoneChange()">
+          <option value="PIK">Pikine</option>
+          <option value="SL">Saint Louis</option>
+        </select>
+      </div>
     </div>
   </div>
+
+  <div class="program-tabs" id="programTabs"></div>
 
   <div class="blocked-banner" id="blockedBanner">
     <div class="blocked-icon">✅</div>
     <div class="blocked-text">
       <h3>Données déjà envoyées pour cette période</h3>
-      <p id="blockedMsg">Vous avez déjà soumis les données pour cette période. Contactez nouscims si vous devez faire une correction.</p>
+      <p id="blockedMsg"></p>
     </div>
   </div>
 
-  <div class="progress-card">
+  <div class="progress-card" id="progressCard" style="display:none">
     <span class="progress-label">Progression</span>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
     <span class="progress-count" id="progressCount">0 / 0 remplis</span>
@@ -222,47 +189,71 @@ input.comment:focus { outline: none; border-color: var(--accent2); }
 </div>
 
 <div class="submit-area">
-  <div class="submit-info">
-    <strong id="submitContext">—</strong>
-    <span id="submitFilled"> · 0 valeurs saisies</span>
-  </div>
+  <div class="submit-info"><strong id="submitContext">—</strong><span id="submitFilled"></span></div>
   <div class="submit-btns">
-    <button class="btn btn-secondary" onclick="clearAll()">✕ Effacer tout</button>
-    <button class="btn btn-primary" id="submitBtn" onclick="submitData()">↑ Envoyer à SharePoint</button>
+    <button class="btn btn-secondary" onclick="clearAll()">✕ Effacer</button>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitData()" disabled>↑ Envoyer</button>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 const PROXY_URL = "https://nut-kpi-proxy.onrender.com/submit";
 
-function storageKey() {
-  return `nut_kpi_${document.getElementById("proyecto").value}_${document.getElementById("periodo").value}_${document.getElementById("anio").value}`;
-}
-function blockedKey() { return storageKey() + "_sent"; }
+// ─── ENTITY → PROGRAMS MAP ───
+const ENTITY_PROGRAMS = {
+  "ACDEV":           ["NUT"],
+  "EVE":             ["NUT"],
+  "Toubabs":         ["NUT"],
+  "Médicos del Mundo":["NUT"],
+  "Plan+Deukendo":   ["NUT"],
+  "Agora":           ["NUT"],
+  "Écoles Pies":     ["EDU-PIKINE","OCU-PIKINE"],
+  "ECOPN":           ["EDU-PIKINE"],
+  "EDEN":            ["EDU-PIKINE"],
+  "Maison de la Gare":["EDU-SL"],
+  "Senegal Academy": ["EDU-SL"],
+  "Caritas":         ["EDU-SL"],
+  "Africa Feliz":    ["OCU-PIKINE"],
+  "Simplon":         ["OCU-PIKINE"],
+  "ULDLR":           ["OCU-PIKINE"],
+  "Diapalanté":      ["OCU-SL"],
+  "GPES":            ["OCU-SL"],
+  "Forut":           ["OCU-SL"],
+};
 
-const SECTIONS = [
-  { id: "kpi", label: "KPI — Indicateurs de performance", pill: "KPI", pillClass: "pill-kpi" },
-  { id: "koi", label: "KOI — Indicateurs de résultats", pill: "KOI", pillClass: "pill-koi" },
-  { id: "kii", label: "KII — Indicateurs d'impact", pill: "KII", pillClass: "pill-kii" },
-  { id: "kpip", label: "KPI-P — Indicateurs projet", pill: "KPI-P", pillClass: "pill-kpip" },
+const PROGRAM_META = {
+  "NUT":        { label:"🌿 NUT — Nutrition",       cls:"nut",       color:"var(--accent)" },
+  "EDU-PIKINE": { label:"📚 EDU — Pikine",           cls:"edu-pikine", color:"var(--green)" },
+  "EDU-SL":     { label:"📚 EDU — Saint Louis",      cls:"edu-sl",    color:"var(--teal)" },
+  "OCU-PIKINE": { label:"💼 OCU — Pikine",           cls:"ocu-pikine",color:"var(--orange)" },
+  "OCU-SL":     { label:"💼 OCU — Saint Louis",      cls:"ocu-sl",    color:"var(--purple)" },
+};
+
+let currentProgram = null;
+let currentEntity  = "";
+
+// ─── NUT DATA ───
+const NUT_SECTIONS = [
+  {id:"kpi",  label:"KPI — Indicateurs de performance", pill:"KPI",   pillClass:"pill-kpi"},
+  {id:"koi",  label:"KOI — Indicateurs de résultats",   pill:"KOI",   pillClass:"pill-koi"},
+  {id:"kii",  label:"KII — Indicateurs d'impact",       pill:"KII",   pillClass:"pill-kii"},
+  {id:"kpip", label:"KPI-P — Indicateurs projet",       pill:"KPI-P", pillClass:"pill-kpip"},
 ];
-
-const KPI_LIST = [
-  {s:"kpi",code:"GKPI1",label:"Nombre TOTAL de PERSONNES directement impactées par le Programme (ayant bénéficié d'au moins une des activités/services du projet)",desag:"",kind:"parent",sex:"FM"},
-  {s:"kpi",code:"KPI2",label:"Nombre d'enfants directement impactés par le programme (ayant bénéficié d'au moins une des activités/services du projet)",desag:"",kind:"parent",sex:"FM"},
+const NUT_LIST = [
+  {s:"kpi",code:"GKPI1",label:"Nombre TOTAL de PERSONNES directement impactées par le Programme",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI2",label:"Nombre d'enfants directement impactés par le programme",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI2.1",label:"Nombre d'enfants directement impactés",desag:"0-2 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI2.2",label:"Nombre d'enfants directement impactés",desag:"2-5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI2.3",label:"Nombre d'enfants directement impactés",desag:"> 5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI3",label:"Nombre d'enfants dépistés (dépistage anthropométrique: P/T & PB) pendant le projet (âge : 0-5/>5 ans)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI3",label:"Nombre d'enfants dépistés (dépistage anthropométrique: P/T & PB)",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI3.1",label:"Nombre d'enfants dépistés",desag:"0-2 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI3.2",label:"Nombre d'enfants dépistés",desag:"2-5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI3.3",label:"Nombre d'enfants dépistés",desag:">5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI4",label:"Nombre d'enfants âgés de 0 à 5 ans dépistés atteints de malnutrition aiguë (modérée MAM / sévère MAS)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI4",label:"Nombre d'enfants âgés de 0 à 5 ans dépistés atteints de malnutrition aiguë (MAM/MAS)",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI4.1",label:"Malnutrition aiguë",desag:"MAM",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI4.2",label:"Malnutrition aiguë",desag:"MAS",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI5",label:"Nombre d'enfants de 0 à 5 ans atteints de MAM référés au projet depuis les structures sanitaires",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI5",label:"Nombre d'enfants de 0 à 5 ans atteints de MAM référés au projet",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI5.1",label:"Enfants référés",desag:"MAM",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI5.2",label:"Enfants référés",desag:"MAS",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI6",label:"Nombre d'enfants dépistés entre 0 et 5 ans atteints de malnutrition chronique",desag:"",kind:"parent",sex:"FM"},
@@ -271,30 +262,26 @@ const KPI_LIST = [
   {s:"kpi",code:"KPI7",label:"Nombre d'enfants entre 0 et 5 ans atteints de malnutrition chronique qui bénéficient d'un soutien nutritionnel",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI7.1",label:"Soutien nutritionnel",desag:"0 à 2 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI7.2",label:"Soutien nutritionnel",desag:"2 à 5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI8",label:"Nombre d'enfants dépistés présentant une insuffisance pondérale (Poids pour âge ou IMC pour âge)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI8",label:"Nombre d'enfants dépistés présentant une insuffisance pondérale",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI8.1",label:"Insuffisance pondérale",desag:"0 à 2 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI8.2",label:"Insuffisance pondérale",desag:"2 à 5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI8.3",label:"Insuffisance pondérale",desag:">5 Ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI9",label:"Nombre d'enfants (0-5/>5 ans) ayant bénéficié d'une mesure d'hémoglobine au cours du projet",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI9",label:"Nombre d'enfants ayant bénéficié d'une mesure d'hémoglobine",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI9.1",label:"Mesure d'hémoglobine",desag:"0 à 5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI9.2",label:"Mesure d'hémoglobine",desag:">5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI10",label:"Nombre d'enfants (0-5/>5 ans) dépistés souffrant d'anémie (hémoglobine <110 g/L)",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI10",label:"Nombre d'enfants dépistés souffrant d'anémie (hémoglobine <110 g/L)",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI10.1",label:"Anémie",desag:"0 à 5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI10.2",label:"Anémie",desag:">5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI11",label:"Nombre d'enfants (6-59 mois/>5 ans) ayant reçu des suppléments de fer — doses préventives",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI11",label:"Nombre d'enfants ayant reçu des suppléments de fer — doses préventives",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI11.1",label:"Suppléments fer préventifs",desag:"6 à 59 mois",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI11.2",label:"Suppléments fer préventifs",desag:">5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI12",label:"Nombre d'enfants (6-59/>5 ans) ayant reçu des suppléments de fer — doses curatives",desag:"",kind:"parent",sex:"FM"},
+  {s:"kpi",code:"KPI12",label:"Nombre d'enfants ayant reçu des suppléments de fer — doses curatives",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI12.1",label:"Suppléments fer curatifs",desag:"6 à 59 mois",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI12.2",label:"Suppléments fer curatifs",desag:">5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI13",label:"Nombre d'enfants âgés de 12 à 59 mois ayant reçu des médicaments antiparasitaires",desag:"",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI14",label:"Nombre d'enfants (0-5 ans) ayant bénéficié de visites à domicile pour un suivi nutrition/santé",desag:"",kind:"single",sex:"FM"},
-  {s:"kpi",code:"KPI15",label:"Nombre d'enfants (6-59/>5 ans) ayant reçu un soutien alimentaire direct grâce au Projet",desag:"",kind:"parent",sex:"FM"},
-  {s:"kpi",code:"KPI15.1",label:"Soutien alimentaire",desag:"6-24 mois",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI15.2",label:"Soutien alimentaire",desag:"2-5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI15.3",label:"Soutien alimentaire",desag:">5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI16",label:"Nombre de Femmes (Gardiens/ennes, Pères) directement impactées par le Programme",desag:"",kind:"single",sex:"FM"},
-  {s:"kpi",code:"KPI17",label:"Nombre de Femmes ayant bénéficié d'un dépistage anthropométrique/PB (enceintes/allaitantes/NENA)",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI14",label:"Nombre d'enfants (0-5 ans) ayant bénéficié de visites à domicile",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI16",label:"Nombre de Femmes (Gardiens/ennes, Pères) directement impactées",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI17",label:"Nombre de Femmes ayant bénéficié d'un dépistage anthropométrique/PB (E/A/NENA)",desag:"",kind:"parent",sex:"F"},
   {s:"kpi",code:"KPI17.1",label:"Dépistage anthropométrique",desag:"enceinte",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI17.2",label:"Dépistage anthropométrique",desag:"allaitantes",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI17.3",label:"Dépistage anthropométrique",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
@@ -306,7 +293,7 @@ const KPI_LIST = [
   {s:"kpi",code:"KPI19.1",label:"Soutien alimentaire",desag:"enceinte",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI19.2",label:"Soutien alimentaire",desag:"allaitantes",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI19.3",label:"Soutien alimentaire",desag:"en âge de procréer (NENA)",kind:"child",sex:"F"},
-  {s:"kpi",code:"KPI20",label:"Nombre de femmes (E/A/NENA) dépistées atteintes de malnutrition (insuffisance pondérale-aiguë)",desag:"",kind:"parent",sex:"F"},
+  {s:"kpi",code:"KPI20",label:"Nombre de femmes (E/A/NENA) dépistées atteintes de malnutrition",desag:"",kind:"parent",sex:"F"},
   {s:"kpi",code:"KPI20.1",label:"Malnutrition femmes",desag:"enceinte",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI20.2",label:"Malnutrition femmes",desag:"allaitantes",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI20.3",label:"Malnutrition femmes",desag:"en âge de procréer (NENA)",kind:"child",sex:"F"},
@@ -323,59 +310,59 @@ const KPI_LIST = [
   {s:"kpi",code:"KPI23.2",label:"Suppléments fer curatifs",desag:"allaitantes",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI23.3",label:"Suppléments fer curatifs",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI24",label:"Nombre de femmes ayant reçu des médicaments antiparasitaires pendant la grossesse",desag:"enceinte",kind:"single",sex:"F"},
-  {s:"kpi",code:"KPI25",label:"Nombre de mères/gardiennes/ens d'enfants participant aux activités de production alimentaire pour l'autoconsommation",desag:"",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI26",label:"Nombre de mères/gardiennes/ens d'enfants ayant participé à des activités de formation pour renforcer leurs compétences entrepreneuriales",desag:"",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI27",label:"Nombre de mères/gardiennes/ens d'enfants ayant bénéficié d'un crédit pour renforcer ou démarrer une AGR",desag:"",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI28",label:"Nombre de mères/gardiennes/ens d'enfants ayant démarré et/ou renforcé une AGR grâce au programme",desag:"",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI29",label:"Nombre de mères - gardien/ennes - pères ayant bénéficié d'activités de formation sur les bonnes pratiques de nutrition, santé, hygiène et soins",desag:"",kind:"single",sex:"FM"},
-  {s:"kpi",code:"KPI30",label:"Nombre de personnes parmi les acteurs communautaires et/ou professionnels de santé formés (PCIME/C)",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI25",label:"Nombre de mères/gardiennes participant aux activités de production alimentaire",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI26",label:"Nombre de mères/gardiennes ayant participé à des formations entrepreneuriales",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI27",label:"Nombre de mères/gardiennes ayant bénéficié d'un crédit pour AGR",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI28",label:"Nombre de mères/gardiennes ayant démarré et/ou renforcé une AGR",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"KPI29",label:"Nombre de mères/pères ayant bénéficié de formations sur bonnes pratiques nutrition/santé/hygiène",desag:"",kind:"single",sex:"FM"},
+  {s:"kpi",code:"KPI30",label:"Nombre de personnes parmi les acteurs communautaires et/ou professionnels de santé formés",desag:"",kind:"single",sex:"FM"},
   {s:"kpi",code:"KPI31",label:"Nombre de visites à domicile de suivi nutrition/santé réalisées",desag:"",kind:"single",sex:"T"},
   {s:"kpi",code:"KPI32",label:"Nombre d'activités de formation et/ou de sensibilisation réalisées",desag:"",kind:"single",sex:"T"},
   {s:"kpi",code:"KPI33",label:"Nombre d'ateliers d'entrepreneuriat/agronomie/autres réalisés",desag:"",kind:"single",sex:"T"},
-  {s:"kpi",code:"GKPI2",label:"Degré de satisfaction des mères - gardien/ennes - pères sur l'accompagnement du projet",desag:"",kind:"parent_text",sex:"T"},
-  {s:"kpi",code:"GKPI2.1",label:"Satisfaction bénéficiaires",desag:"4. TRÈS satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"GKPI2.2",label:"Satisfaction bénéficiaires",desag:"3. ASSEZ satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"GKPI2.3",label:"Satisfaction bénéficiaires",desag:"2. PEU satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"GKPI2.4",label:"Satisfaction bénéficiaires",desag:"1. PAS DU TOUT satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI35",label:"Degré de satisfaction des acteurs communautaires concernant la formation reçue",desag:"",kind:"parent",sex:"T"},
-  {s:"kpi",code:"KPI35.1",label:"Satisfaction acteurs communautaires",desag:"4. TRÈS satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI35.2",label:"Satisfaction acteurs communautaires",desag:"3. ASSEZ satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI35.3",label:"Satisfaction acteurs communautaires",desag:"2. PEU satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"KPI35.4",label:"Satisfaction acteurs communautaires",desag:"1. PAS DU TOUT satisfait",kind:"single",sex:"T"},
-  {s:"kpi",code:"GKPI3",label:"Nombre et type d'entités qui participent et/ou collaborent à la mise en œuvre du projet",desag:"",kind:"single",sex:"T"},
+  {s:"kpi",code:"GKPI2",label:"Degré de satisfaction des mères/pères sur l'accompagnement du projet",desag:"",kind:"parent_text",sex:"T"},
+  {s:"kpi",code:"GKPI2.1",label:"Satisfaction bénéficiaires",desag:"4. TRÈS satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"GKPI2.2",label:"Satisfaction bénéficiaires",desag:"3. ASSEZ satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"GKPI2.3",label:"Satisfaction bénéficiaires",desag:"2. PEU satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"GKPI2.4",label:"Satisfaction bénéficiaires",desag:"1. PAS DU TOUT satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"KPI35",label:"Degré de satisfaction des acteurs communautaires concernant la formation reçue",desag:"",kind:"parent_text",sex:"T"},
+  {s:"kpi",code:"KPI35.1",label:"Satisfaction acteurs",desag:"4. TRÈS satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"KPI35.2",label:"Satisfaction acteurs",desag:"3. ASSEZ satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"KPI35.3",label:"Satisfaction acteurs",desag:"2. PEU satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"KPI35.4",label:"Satisfaction acteurs",desag:"1. PAS DU TOUT satisfait",kind:"child",sex:"T"},
+  {s:"kpi",code:"GKPI3",label:"Nombre et type d'entités qui participent et/ou collaborent à la mise en œuvre",desag:"",kind:"single",sex:"T"},
   {s:"koi",code:"KOIE1",label:"Nombre d'enfants (0-59 mois) traités ou référés pour malnutrition aiguë qui se rétablissent",desag:"",kind:"parent",sex:"FM"},
-  {s:"koi",code:"KOIE1.1",label:"Rétablissement malnutrition aiguë",desag:"MAM",kind:"child",sex:"FM"},
-  {s:"koi",code:"KOIE1.2",label:"Rétablissement malnutrition aiguë",desag:"MAS",kind:"child",sex:"FM"},
-  {s:"koi",code:"KOIE2",label:"Durée moyenne de rétablissement pour les enfants MAM-MAS guéris âgés de 6 à 59 mois (en jours)",desag:"",kind:"parent",sex:"T"},
-  {s:"koi",code:"KOIE2.1",label:"Durée moyenne rétablissement",desag:"MAM (jours)",kind:"child",sex:"T"},
-  {s:"koi",code:"KOIE2.2",label:"Durée moyenne rétablissement",desag:"MAS (jours)",kind:"child",sex:"T"},
-  {s:"koi",code:"KOIE3",label:"Nombre d'enfants (0-59 mois) traités pour malnutrition aiguë qui abandonnent le traitement",desag:"",kind:"parent",sex:"T"},
+  {s:"koi",code:"KOIE1.1",label:"Rétablissement",desag:"MAM",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOIE1.2",label:"Rétablissement",desag:"MAS",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOIE2",label:"Durée moyenne de rétablissement pour les enfants MAM-MAS guéris (jours)",desag:"",kind:"parent",sex:"T"},
+  {s:"koi",code:"KOIE2.1",label:"Durée rétablissement",desag:"MAM (jours)",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE2.2",label:"Durée rétablissement",desag:"MAS (jours)",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3",label:"Nombre d'enfants traités pour malnutrition aiguë qui abandonnent le traitement",desag:"",kind:"parent",sex:"T"},
   {s:"koi",code:"KOIE3.1",label:"Abandon traitement",desag:"Déplacement de la famille",kind:"child",sex:"T"},
-  {s:"koi",code:"KOIE3.2",label:"Abandon traitement",desag:"Contraintes de transport et distance géographique",kind:"child",sex:"T"},
-  {s:"koi",code:"KOIE3.3",label:"Abandon traitement",desag:"Manque de compréhension du traitement par les parents",kind:"child",sex:"T"},
-  {s:"koi",code:"KOIE3.4",label:"Abandon traitement",desag:"AUTRE (préciser dans les commentaires)",kind:"child",sex:"T"},
-  {s:"koi",code:"KOIE4",label:"Nombre d'enfants (0-59 mois) référés pour malnutrition aiguë qui n'ont pas été traités",desag:"",kind:"single",sex:"T"},
-  {s:"koi",code:"KOIE5",label:"Nombre d'enfants (0-59 mois) atteints de malnutrition aiguë qui décèdent après avoir commencé le traitement",desag:"",kind:"single",sex:"T"},
-  {s:"koi",code:"KOIE6",label:"Nombre d'enfants (0-59 mois) qui rechutent à la malnutrition aiguë et sont réadmis dans le projet",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE3.2",label:"Abandon traitement",desag:"Contraintes de transport",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3.3",label:"Abandon traitement",desag:"Manque de compréhension des parents",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE3.4",label:"Abandon traitement",desag:"AUTRE",kind:"child",sex:"T"},
+  {s:"koi",code:"KOIE4",label:"Nombre d'enfants référés pour malnutrition aiguë qui n'ont pas été traités",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE5",label:"Nombre d'enfants atteints de malnutrition aiguë qui décèdent après avoir commencé le traitement",desag:"",kind:"single",sex:"T"},
+  {s:"koi",code:"KOIE6",label:"Nombre d'enfants qui rechutent à la malnutrition aiguë et sont réadmis",desag:"",kind:"single",sex:"T"},
   {s:"koi",code:"KOIE7",label:"Nombre de femmes enceintes identifiées comme ayant un faible poids gestationnel qui se rétablissent",desag:"",kind:"single",sex:"F"},
   {s:"koi",code:"KOIE8",label:"Nombre d'enfants présentant une insuffisance pondérale qui se rétablissent",desag:"",kind:"parent",sex:"FM"},
-  {s:"koi",code:"KOI8.1",label:"Insuffisance pondérale rétablis",desag:"0 à 2 ans",kind:"child",sex:"FM"},
-  {s:"koi",code:"KOI8.2",label:"Insuffisance pondérale rétablis",desag:"2 à 5 ans",kind:"child",sex:"FM"},
-  {s:"koi",code:"KOI8.3",label:"Insuffisance pondérale rétablis",desag:">5 Ans",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOI8.1",label:"Rétablissement insuffisance pondérale",desag:"0 à 2 ans",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOI8.2",label:"Rétablissement insuffisance pondérale",desag:"2 à 5 ans",kind:"child",sex:"FM"},
+  {s:"koi",code:"KOI8.3",label:"Rétablissement insuffisance pondérale",desag:">5 Ans",kind:"child",sex:"FM"},
   {s:"koi",code:"KOIE9",label:"Nombre de familles qui ont reproduit des jardins dans leurs maisons",desag:"",kind:"single",sex:"T"},
   {s:"koi",code:"KOIE10",label:"Nombre moyen de produits cultivés par les ménages pour leur propre consommation",desag:"",kind:"single",sex:"T"},
   {s:"koi",code:"KOIE11",label:"Pourcentage de mères bénéficiaires qui déclarent avoir obtenu un revenu complémentaire grâce à l'AGI",desag:"",kind:"single",sex:"T"},
-  {s:"kii",code:"KII1",label:"Pourcentage d'enfants âgés de 0 à 59 mois présentant un retard de croissance (malnutrition chronique)",desag:"",kind:"parent",sex:"T"},
+  {s:"kii",code:"KII1",label:"Pourcentage d'enfants âgés de 0 à 59 mois présentant un retard de croissance",desag:"",kind:"parent",sex:"T"},
   {s:"kii",code:"KII1.1",label:"% retard de croissance",desag:"0-2 ans",kind:"child",sex:"T"},
   {s:"kii",code:"KII1.2",label:"% retard de croissance",desag:"2-5 ans",kind:"child",sex:"T"},
-  {s:"kii",code:"KII2",label:"Pourcentage d'enfants âgés de 0 à 59 mois souffrant d'émaciation (malnutrition aiguë)",desag:"",kind:"parent",sex:"T"},
+  {s:"kii",code:"KII2",label:"Pourcentage d'enfants âgés de 0 à 59 mois souffrant d'émaciation",desag:"",kind:"parent",sex:"T"},
   {s:"kii",code:"KII2.1",label:"% émaciation",desag:"MAM",kind:"child",sex:"T"},
   {s:"kii",code:"KII2.2",label:"% émaciation",desag:"MAS",kind:"child",sex:"T"},
   {s:"kii",code:"KII3",label:"Pourcentage d'enfants de 0 à 6 mois bénéficiant d'un allaitement exclusif",desag:"",kind:"single",sex:"T"},
-  {s:"kii",code:"KII4",label:"Pourcentage de nouveau-nés qui sont allaités dans la première heure de vie",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII4",label:"Pourcentage de nouveau-nés allaités dans la première heure de vie",desag:"",kind:"single",sex:"T"},
   {s:"kii",code:"KII5",label:"Pourcentage d'enfants de 6 à 23 mois qui reçoivent un apport alimentaire minimum acceptable",desag:"",kind:"single",sex:"T"},
-  {s:"kii",code:"KII6",label:"Pourcentage de mères/gardiens/pères appliquant les bonnes pratiques de lavage des mains (4 moments clés)",desag:"",kind:"single",sex:"T"},
-  {s:"kii",code:"KII7",label:"Score de diversité alimentaire à domicile (HDDS: Household Dietary Diversity Score)",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII6",label:"Pourcentage de mères/gardiens/pères appliquant les bonnes pratiques de lavage des mains",desag:"",kind:"single",sex:"T"},
+  {s:"kii",code:"KII7",label:"Score de diversité alimentaire à domicile (HDDS)",desag:"",kind:"single",sex:"T"},
   {s:"kii",code:"KII8",label:"Pourcentage d'enfants âgés de 6 à 59 mois souffrant d'anémie",desag:"",kind:"parent",sex:"T"},
   {s:"kii",code:"KII8.1",label:"% anémie enfants",desag:"0-2 ans",kind:"child",sex:"T"},
   {s:"kii",code:"KII8.2",label:"% anémie enfants",desag:"2-5 ans",kind:"child",sex:"T"},
@@ -387,44 +374,468 @@ const KPI_LIST = [
   {s:"kpip",code:"KPI-P2",label:"Bourses santé",desag:"",kind:"single",sex:"T"},
 ];
 
+// ─── EDU PIKINE DATA ───
+const EDU_PIK_SECTIONS = [
+  {id:"base",  label:"Données de base",                              pill:"BASE",   pillClass:"pill-kpi"},
+  {id:"genre", label:"Axe transversal genre",                        pill:"GENRE",  pillClass:"pill-kpip"},
+  {id:"climat",label:"Axe transversal changement climatique",        pill:"CLIMAT", pillClass:"pill-koi"},
+  {id:"axe1",  label:"Accès à l'éducation — AXE 1",                 pill:"AXE 1",  pillClass:"pill-kpi"},
+  {id:"axe2",  label:"Rendement scolaire — AXE 2",                  pill:"AXE 2",  pillClass:"pill-kii"},
+  {id:"axe3",  label:"Apprentissage socio-émotionnel — AXE 3",       pill:"AXE 3",  pillClass:"pill-koi"},
+  {id:"gouv",  label:"Gouvernance scolaire et implication communautaire", pill:"GOUV", pillClass:"pill-kpip"},
+];
+const EDU_PIK_LIST = [
+  {s:"base",code:"KPI2",label:"Nombre d'enfants (de tout âge) impactés par le projet",desag:"",kind:"single",sex:"FM"},
+  {s:"base",code:"KPI3",label:"Nombre de mères/pères impactés par le projet",desag:"",kind:"single",sex:"FM"},
+  {s:"base",code:"KPI4",label:"Nombre de professionnels de l'éducation impactés par le projet",desag:"",kind:"single",sex:"FM"},
+  {s:"base",code:"KPI5",label:"Nombre d'axes sur lesquels le projet fonctionne",desag:"",kind:"single",sex:"T"},
+  {s:"base",code:"KPI6",label:"L'entité intègre le numérique dans la collecte de données (KoboToolBox)",desag:"",kind:"single",sex:"T"},
+  {s:"base",code:"KPI7",label:"Budget annuel du projet",desag:"",kind:"single",sex:"T"},
+  {s:"base",code:"KPI24",label:"Nombre d'écoles impactées par le projet",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KPI8",label:"Le projet inclut-il parmi ses objectifs la réduction des écarts entre les sexes ?",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KOI31",label:"Pourcentage du budget alloué aux activités visant à réduire l'écart entre les sexes",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KOI1",label:"Pourcentage de référents femmes citées par les filles (TOC)",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KPI25",label:"Nombre d'initiatives menées par ou pour les femmes au sein des dispositifs éducatifs communautaires",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KII1",label:"Pourcentage de participants aux ateliers/formations qui adoptent des pratiques parentales positives",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KOI2",label:"Pourcentage des élèves qui rapportent discuter de la santé reproductive avec leurs parents ou enseignants",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI26",label:"Pourcentage d'écoles qui ont des rampes et des toilettes adaptées",desag:"",kind:"single",sex:"FM"},
+  {s:"climat",code:"KPI10",label:"Le projet comprend-il des mesures pour lutter contre le changement climatique ?",desag:"",kind:"single",sex:"T"},
+  {s:"climat",code:"KOI3",label:"Pourcentage du budget alloué aux activités visant à lutter contre le changement climatique",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI11",label:"Le projet contient l'axe de renforcement de l'économie familiale (AGI)",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI12",label:"Nombre d'enfants non scolarisés identifiés (jamais scolarisés)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI13",label:"Nombre d'enfants qui ont abandonné l'école",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KII2",label:"Taux d'abandon scolaire chez les enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI14",label:"Nombre de filles et de garçons identifiés comme absentéistes (plus de 2 jours/2 semaines)",desag:"",kind:"parent",sex:"FM"},
+  {s:"axe1",code:"KPI14.1",label:"Absentéisme",desag:"En raison de la maladie",kind:"child",sex:"FM"},
+  {s:"axe1",code:"KPI14.2",label:"Absentéisme",desag:"Raisons familiales",kind:"child",sex:"FM"},
+  {s:"axe1",code:"KPI14.3",label:"Absentéisme",desag:"Démotivation",kind:"child",sex:"FM"},
+  {s:"axe1",code:"KPI14.4",label:"Absentéisme",desag:"Autres",kind:"child",sex:"FM"},
+  {s:"axe1",code:"KPI15",label:"Pourcentage d'enfants identifiés comme absentéistes (plus de deux jours/2 semaines)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI16",label:"Nombre d'enfants ayant reçu un soutien financier/des bourses",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI17",label:"Nombre d'enfants ayant reçu des fournitures scolaires (kits, uniformes...)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI32",label:"Pourcentage d'élèves qui ont tout le matériel approprié pour accomplir ses tâches scolaires",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI18",label:"Nombre d'enfants ayant accès à des repas gratuits ou à prix réduit",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KII3",label:"Pourcentage d'élèves bénéficiant de repas scolaires nutritifs",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI19",label:"Nombre d'aidants (pères/mères) qui ont reçu une formation en éducation financière/AGR",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI4",label:"Nombre d'aidants qui ont démarré et/ou renforcé une AGR grâce au programme",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI5",label:"Pourcentage d'aidants déclarant avoir obtenu des revenus de l'AGI démarré/renforcé",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI20",label:"Nombre d'infrastructures scolaires construites ou réhabilitées",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KOI6",label:"Nombre d'enfants qui ont réintégré l'école après avoir abandonné leurs études",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KII4",label:"Taux de réintégration scolaire",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI7",label:"Pourcentage du check-list d'une école avec un environnement propice",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI39",label:"Nombre d'élèves par table banc",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI40",label:"Nombre d'élèves par salle de classes",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KOI8",label:"Nombre de jours que les cours sont interrompus à cause du climat / an",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KOI9",label:"Pourcentage des élèves et enseignants qui trouvent l'école attrayante et se sentent en sécurité",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI43",label:"État de propreté des espaces communs",desag:"",kind:"single",sex:"T"},
+  {s:"axe2",code:"KPI21",label:"Nombre d'enfants qui ont reçu un renforcement scolaire dans le cadre d'une activité de projet",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI22",label:"Nombre d'ordinateurs/tablettes installés à des fins pédagogiques",desag:"",kind:"single",sex:"T"},
+  {s:"axe2",code:"KPI23",label:"Nombre de formations dispensées aux enseignants sur les pédagogies/techniques",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI46",label:"Nombre d'enseignants ayant suivi des formations continues adaptées à leurs besoins",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI10",label:"Pourcentage d'enseignants intégrant les outils numériques dans leur enseignement quotidien",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI11",label:"Le projet intègre le numérique dans le processus d'apprentissage",desag:"",kind:"single",sex:"T"},
+  {s:"axe2",code:"KPI27",label:"Pourcentage d'enfants qui indiquent une aversion pour l'école",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI28",label:"Pourcentage de filles/garçons ayant réussi le dernier cours suivi",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI29",label:"Pourcentage d'enfants qui sont passés en classe supérieure avec les notions de base nécessaires",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI30",label:"Pourcentage d'enfants qui n'aiment pas les mathématiques",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI31",label:"Pourcentage d'enfants qui utilisent des outils numériques dans leur apprentissage",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KII5",label:"Pourcentage d'enfants possédant des compétences en lecture et écriture adaptées à leur niveau",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KII6",label:"Pourcentage d'enfants qui possèdent des compétences mathématiques adaptées à leur niveau",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI3b",label:"Degré d'applicabilité des connaissances acquises par les professionnels de l'éducation",desag:"",kind:"parent_text",sex:"T"},
+  {s:"axe2",code:"KOI3b.1",label:"Applicabilité",desag:"4. TRÈS APPLICABLE",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI3b.2",label:"Applicabilité",desag:"3. TOUT À FAIT APPLICABLE",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI3b.3",label:"Applicabilité",desag:"2. PEU APPLICABLE",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI3b.4",label:"Applicabilité",desag:"1. RIEN APPLICABLE",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b",label:"Degré de satisfaction des professionnels de l'éducation concernant la formation reçue",desag:"",kind:"parent_text",sex:"T"},
+  {s:"axe2",code:"KOI4b.1",label:"Satisfaction formation",desag:"4. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b.2",label:"Satisfaction formation",desag:"3. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b.3",label:"Satisfaction formation",desag:"2. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b.4",label:"Satisfaction formation",desag:"1. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI15",label:"Degré de satisfaction des professionnels de l'éducation concernant le projet",desag:"",kind:"parent_text",sex:"T"},
+  {s:"axe2",code:"KOI15.1",label:"Satisfaction projet",desag:"4. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI15.2",label:"Satisfaction projet",desag:"3. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI15.3",label:"Satisfaction projet",desag:"2. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI15.4",label:"Satisfaction projet",desag:"1. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2",label:"Degré de satisfaction des soignants (mères, pères) vis-à-vis du projet",desag:"",kind:"parent_text",sex:"T"},
+  {s:"axe2",code:"GKPI2.1",label:"Satisfaction soignants",desag:"4. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2.2",label:"Satisfaction soignants",desag:"3. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2.3",label:"Satisfaction soignants",desag:"2. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2.4",label:"Satisfaction soignants",desag:"1. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI16",label:"Pourcentage d'enseignants qui indique avoir utilisé des pédagogies innovantes dans leurs cours",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI17",label:"Pourcentage d'élèves déclarant que les cours sont stimulants et intéressants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI18",label:"Nombre d'enfants qui poursuivent des études secondaires (de ceux inscrits en CM2)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI33",label:"Nombre d'enfants accompagnés avec des visites à domicile",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI34",label:"Nombre d'enfants participant aux ateliers d'apprentissage socio-émotionnel",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI35",label:"Nombre de soignants (mères/pères) participant à des ateliers socio-émotionnels",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI36",label:"Nombre d'enfants bénéficiant d'un soutien psychologique",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI37",label:"Nombre de soignants qui reçoivent un soutien psychologique",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI19",label:"Pourcentage d'enfants qui ont de bonnes capacités socio-émotionnelles",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI20",label:"Pourcentage de soignants (mères/pères) qui ont de bonnes capacités socio-émotionnelles",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI38",label:"Nombre de formations organisées pour les enseignants sur l'apprentissage socio-émotionnel",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KII7",label:"Taux d'amélioration de l'apprentissage et des résultats scolaires des enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI47",label:"Nombre de violences identifiées et pourcentage traitées par des dispositifs appropriés",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI21",label:"Pourcentage des violences identifiées traitées par des dispositifs appropriés",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI22",label:"Taux de satisfaction des victimes/témoins quant à la gestion des cas de violence",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI23",label:"Pourcentage d'enfants sans acte de naissance bénéficiant des mêmes droits éducatifs",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI24",label:"Pourcentage de familles ayant pris des mesures pour régulariser l'état civil de leurs enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI25",label:"Pourcentage de CAP considérées actives par les enseignants",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI41",label:"Perception des soignants (mères/pères) à l'égard des enseignants et de la gestion du centre",desag:"",kind:"parent_text",sex:"T"},
+  {s:"gouv",code:"KPI41.1",label:"Perception soignants",desag:"1. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI41.2",label:"Perception soignants",desag:"2. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI41.3",label:"Perception soignants",desag:"3. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI41.4",label:"Perception soignants",desag:"4. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI42",label:"Nombre de journées de sensibilisation à l'éducation aux droits organisées",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KPI44",label:"Nombre d'enfants qui ont participé à des activités d'éducation civique",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KPI45",label:"Le projet établit des mécanismes de participation et de consultation",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KOI26",label:"Pourcentage de parents et enseignants qui estiment que la communication scolaire est transparente",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KPI65",label:"Nombre de campagnes de plaidoyer politique dans le domaine de l'éducation",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KOI27",label:"Pourcentage du personnel éducatif utilisant des canaux de communication innovants",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"GKPI3",label:"Nombre d'alliances avec des organisations/acteurs locaux pour renforcer le projet",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI48",label:"Taux de participation des parents et élèves aux réunions ou événements éducatifs",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KII8",label:"Changements dans les attitudes et perceptions de la communauté à l'égard de l'éducation",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KOI28",label:"Y a-t-il des éléments du projet qui pourraient être considérés comme une bonne pratique ?",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KOI29",label:"Pourcentage des Plans d'Action des CGEs qui s'exécute",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI49",label:"Nombre de réunions par an tenues par les CGEs",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI50",label:"Nombre de réunions par an tenues par les APEs",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI51",label:"Nombre de réunions par an tenues par les AMEs",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KOI30",label:"Nombre de stratégies ou plans révisés pour mieux répondre aux réalités locales",desag:"",kind:"single",sex:"T"},
+];
+
+// ─── EDU SAINT LOUIS DATA (same sections, different indicators) ───
+const EDU_SL_SECTIONS = EDU_PIK_SECTIONS;
+const EDU_SL_LIST = [
+  {s:"base",code:"KPI2",label:"Nombre d'enfants (de tout âge) impactés par le projet",desag:"",kind:"single",sex:"FM"},
+  {s:"base",code:"KPI3",label:"Nombre de mères/pères impactés par le projet",desag:"",kind:"single",sex:"FM"},
+  {s:"base",code:"KPI4",label:"Nombre de professionnels de l'éducation impactés par le projet",desag:"",kind:"single",sex:"FM"},
+  {s:"base",code:"KPI5",label:"Nombre d'axes sur lesquels le projet fonctionne",desag:"",kind:"single",sex:"T"},
+  {s:"base",code:"KPI6",label:"L'entité intègre le numérique dans la collecte de données (KoboToolBox)",desag:"",kind:"single",sex:"T"},
+  {s:"base",code:"KPI7",label:"Budget annuel du projet",desag:"",kind:"single",sex:"T"},
+  {s:"base",code:"KPI24",label:"Nombre d'écoles impactées par le projet",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KPI8",label:"Le projet inclut-il parmi ses objectifs la réduction des écarts entre les sexes ?",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KOI31",label:"Pourcentage du budget alloué aux activités visant à réduire l'écart entre les sexes",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KPI46",label:"Pourcentage de familles informées sur les aspects reproductifs et de la santé sexuelle",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI47",label:"Pourcentage d'enseignants ayant intégré la santé sexuelle et reproductive dans leurs cours",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI48",label:"Pourcentage d'enseignants se sentant compétents pour aborder les questions de santé sexuelle",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI49",label:"Pourcentage des élèves qui rapportent discuter de la santé reproductive avec leurs parents",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI50",label:"Pourcentage du personnel éducatif reconnaissant l'importance d'inclure la santé reproductive",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI51",label:"Score moyen des référents genre lors d'évaluations post-formation",desag:"",kind:"single",sex:"T"},
+  {s:"genre",code:"KPI52",label:"Pourcentage d'autorités exprimant un engagement envers les concepts de genre et d'équité",desag:"",kind:"single",sex:"FM"},
+  {s:"genre",code:"KPI53",label:"% de filles identifiées comme victimes de violence",desag:"",kind:"single",sex:"F"},
+  {s:"genre",code:"KOI32",label:"% de filles victimes de violence accompagnées par un plan psychologique",desag:"",kind:"single",sex:"F"},
+  {s:"genre",code:"KPI26",label:"Pourcentage d'écoles qui ont des rampes et des toilettes adaptées",desag:"",kind:"single",sex:"FM"},
+  {s:"climat",code:"KPI10",label:"Le projet comprend-il des mesures pour lutter contre le changement climatique ?",desag:"",kind:"single",sex:"T"},
+  {s:"climat",code:"KOI3",label:"Pourcentage du budget alloué aux activités visant à lutter contre le changement climatique",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI11",label:"Le projet contient l'axe de renforcement de l'économie familiale (AGI)",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI12",label:"Nombre d'enfants non scolarisés identifiés (jamais scolarisés)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI13",label:"Nombre d'enfants qui ont abandonné l'école",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KII2",label:"Taux d'abandon scolaire chez les enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI14",label:"Nombre d'enfants identifiés comme absentéistes (plus de 2 jours/2 semaines)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI15",label:"Pourcentage d'enfants identifiés comme absentéistes",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI16",label:"Nombre d'enfants ayant reçu un soutien financier/des bourses",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI17",label:"Nombre d'enfants ayant reçu des fournitures scolaires (kits, uniformes...)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI33",label:"Pourcentage des écoles où les CGEs mettent en place des initiatives pour garantir une alimentation saine",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI18",label:"Nombre d'enfants ayant accès à des repas gratuits ou à prix réduit",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KPI19",label:"Nombre d'aidants (pères/mères) qui ont reçu une formation en éducation financière/AGR",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI4",label:"Nombre d'aidants qui ont démarré et/ou renforcé une AGR grâce au programme",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI5",label:"Pourcentage d'aidants déclarant avoir obtenu des revenus de l'AGI démarré/renforcé",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI6",label:"Nombre d'enfants qui ont réintégré l'école après avoir abandonné leurs études",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KII4",label:"Taux de réintégration scolaire",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI34",label:"Échelle de motivation des enfants (à renseigner par les parents et les enseignants)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe1",code:"KOI35",label:"Changement des habitudes alimentaires observé dans les foyers",desag:"",kind:"single",sex:"T"},
+  {s:"axe1",code:"KPI54",label:"Pourcentage du check-list d'une école de proximité en bon état avec infrastructures adéquates",desag:"",kind:"single",sex:"T"},
+  {s:"axe2",code:"KPI21",label:"Nombre d'enfants qui ont reçu un renforcement scolaire dans le cadre d'une activité de projet",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI22",label:"Nombre d'ordinateurs/tablettes installés à des fins pédagogiques",desag:"",kind:"single",sex:"T"},
+  {s:"axe2",code:"KPI23",label:"Nombre de formations dispensées aux enseignants sur les pédagogies/techniques",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI36",label:"Pourcentage d'enseignants observant une amélioration de la participation des élèves en classe",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI37",label:"Pourcentage d'enseignants observant une amélioration de la concentration des élèves en classe",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI11",label:"Le projet intègre le numérique dans le processus d'apprentissage",desag:"",kind:"single",sex:"T"},
+  {s:"axe2",code:"KPI27",label:"Pourcentage d'enfants qui indiquent une aversion pour l'école",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI2",label:"Pourcentage de soignants (mères/pères) impliqués dans l'éducation de leurs enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI28",label:"Pourcentage de filles/garçons ayant réussi le dernier cours suivi",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI29",label:"Pourcentage d'enfants qui sont passés en classe supérieure avec les notions de base nécessaires",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI30",label:"Pourcentage d'enfants qui n'aiment pas les mathématiques",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KPI31",label:"Pourcentage d'enfants qui utilisent des outils numériques dans leur apprentissage",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KII5",label:"Pourcentage d'enfants possédant des compétences en lecture et écriture adaptées à leur niveau",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KII6",label:"Pourcentage d'enfants qui possèdent des compétences mathématiques adaptées à leur niveau",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI4b",label:"Degré de satisfaction des professionnels de l'éducation concernant le projet",desag:"",kind:"parent_text",sex:"T"},
+  {s:"axe2",code:"KOI4b.1",label:"Satisfaction projet",desag:"4. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b.2",label:"Satisfaction projet",desag:"3. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b.3",label:"Satisfaction projet",desag:"2. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"KOI4b.4",label:"Satisfaction projet",desag:"1. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2",label:"Degré de satisfaction des soignants (mères, pères) vis-à-vis du projet",desag:"",kind:"parent_text",sex:"T"},
+  {s:"axe2",code:"GKPI2.1",label:"Satisfaction soignants",desag:"4. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2.2",label:"Satisfaction soignants",desag:"3. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2.3",label:"Satisfaction soignants",desag:"2. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"axe2",code:"GKPI2.4",label:"Satisfaction soignants",desag:"1. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"axe2",code:"KPI55",label:"Pourcentage d'enseignants qui considèrent les cellules pédagogiques utiles",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI16",label:"Pourcentage d'enseignants qui indique avoir utilisé des pédagogies innovantes dans leurs cours",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI38",label:"Taux de transition au niveau moyen des élèves ayant un handicap (de ceux inscrits en CM2)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KOI39",label:"Taux de transition au niveau moyen (de ceux inscrits en CM2)",desag:"",kind:"single",sex:"FM"},
+  {s:"axe2",code:"KII9",label:"Pourcentage d'enseignants atteignant des objectifs de performance définis",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI33",label:"Nombre d'enfants accompagnés avec des visites à domicile",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI34",label:"Nombre d'enfants participant aux ateliers d'apprentissage socio-émotionnel",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI35",label:"Nombre de soignants (mères/pères) participant à des ateliers socio-émotionnels",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI36",label:"Nombre d'enfants bénéficiant d'un soutien psychologique",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI37",label:"Nombre de soignants qui reçoivent un soutien psychologique",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI19",label:"Pourcentage d'enfants qui ont de bonnes capacités socio-émotionnelles",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI20",label:"Pourcentage de soignants (mères/pères) qui ont de bonnes capacités socio-émotionnelles",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI38",label:"Nombre de formations organisées pour les enseignants sur l'apprentissage socio-émotionnel",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KII7",label:"Taux d'amélioration de l'apprentissage et des résultats scolaires des enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI41",label:"Pourcentage d'enfants déclarant qu'ils se sentent respectés par leurs enseignants et camarades",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI42",label:"Pourcentage d'enfants affirmant qu'ils se sentent en sécurité dans leur environnement scolaire",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI43",label:"Nombre de violences identifiées dans le milieu scolaire",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI44",label:"Pourcentage des violences identifiées traitées par les enseignants et le personnel scolaire",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KOI22",label:"Taux de satisfaction des victimes/témoins quant à la gestion des cas de violence",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI57",label:"Pourcentage d'enseignants ayant suivi une formation en détection des comportements à risque",desag:"",kind:"single",sex:"FM"},
+  {s:"axe3",code:"KPI60",label:"Pourcentage d'enseignants, directeurs, IPs ayant suivi une formation en droit des enfants",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KPI62",label:"Nombre de réunions par an tenues par les CGEs",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI63",label:"Nombre de réunions par an tenues par les APEs",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI64",label:"Nombre de réunions par an tenues par les AMEs",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI41",label:"Perception des soignants à l'égard des enseignants et de la gestion du centre éducatif",desag:"",kind:"parent_text",sex:"T"},
+  {s:"gouv",code:"KPI41.1",label:"Perception soignants",desag:"1. TRÈS SATISFAITS",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI41.2",label:"Perception soignants",desag:"2. ASSEZ SATISFAITS",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI41.3",label:"Perception soignants",desag:"3. PEU SATISFAITS",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI41.4",label:"Perception soignants",desag:"4. RIEN DE SATISFAIT",kind:"child",sex:"T"},
+  {s:"gouv",code:"KPI44",label:"Nombre d'enfants qui ont participé à des activités d'éducation civique",desag:"",kind:"single",sex:"FM"},
+  {s:"gouv",code:"KPI45",label:"Le projet établit des mécanismes de participation et de consultation",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KOI46",label:"Pourcentage de gouvernements scolaires actifs et dynamiques aux écoles cibles",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI65",label:"Nombre de campagnes de plaidoyer politique dans le domaine de l'éducation",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KPI68",label:"Nombre d'alliances avec des organisations/acteurs locaux pour renforcer le projet",desag:"",kind:"single",sex:"T"},
+  {s:"gouv",code:"KOI28",label:"Y a-t-il des éléments du projet qui pourraient être considérés comme une bonne pratique ?",desag:"",kind:"single",sex:"T"},
+];
+
+// ─── OCU PIKINE DATA ───
+const OCU_PIK_SECTIONS = [
+  {id:"gen",   label:"Indicateurs généraux",           pill:"GEN",   pillClass:"pill-kpi"},
+  {id:"info",  label:"Information et accompagnement",  pill:"INFO",  pillClass:"pill-koi"},
+  {id:"form",  label:"Formation",                      pill:"FORM",  pillClass:"pill-kii"},
+  {id:"insert",label:"Insertion",                      pill:"INSERT",pillClass:"pill-kpip"},
+];
+
+function buildOCUList(indList, prefix) {
+  // indList: array of {num, label, subs, sex}
+  const result = [];
+  indList.forEach(({num, label, subs, sex, section}) => {
+    const code = `${prefix}-${num}`;
+    const s = section;
+    if(subs && subs.length) {
+      result.push({s, code, label, desag:"", kind:"parent_text", sex: sex||"FM"});
+      subs.forEach((sub,i) => {
+        result.push({s, code:`${code}.${i+1}`, label: sub.replace(/^[a-z]\)\s*/,""), desag:sub.replace(/^([a-z]\))\s*.*/,"$1"), kind:"child", sex:sex||"FM"});
+      });
+    } else {
+      result.push({s, code, label, desag:"", kind:"single", sex: sex||"FM"});
+    }
+  });
+  return result;
+}
+
+const OCU_PIK_RAW = [
+  {section:"gen",num:1,label:"Nombre de jeunes participant.e.s (désaggrégé par sexe et groupes d'âge) qui bénéficient annuellement et directement du projet",subs:["a) Moins de 15 ans","b) De 15 à 18 ans","c) De 18 à 30 ans","d) Plus de 30 ans"],sex:"FM"},
+  {section:"gen",num:2,label:"Nombre de jeunes parmi les bénéficiaires directs identifiés comme appartenant à un ou plusieurs groupes en situation de vulnérabilité",subs:["a) Jeunes femmes seules avec enfants","b) Migrants ou déplacés internes","c) Jeunes issus de minorités ou de groupes marginalisés","d) Orphelins ou enfants des rues","e) Personnes en situation de handicap","f) Autres"],sex:"FM"},
+  {section:"gen",num:3,label:"Nombre de jeunes (désagréger par sexe) satisfaits du projet",subs:["a) Très satisfait","b) Satisfait","c) Peu satisfait","d) Pas du tout satisfait"],sex:"FM"},
+  {section:"gen",num:4,label:"Nombre de jeunes bénéficiaires directs bénéficiant d'un accompagnement psychosocial",subs:[],sex:"FM"},
+  {section:"gen",num:5,label:"Pourcentage de jeunes bénéficiaires directs ayant reçu un accompagnement psychosocial et ayant trouvé un stage ou emploi",subs:[],sex:"T"},
+  {section:"gen",num:6,label:"Pourcentage de jeunes signalant une plus grande confiance dans leurs compétences à trouver un emploi",subs:[],sex:"T"},
+  {section:"gen",num:7,label:"Genre — Pourcentage du budget alloué aux activités visant à réduire les écarts entre les sexes",subs:[],sex:"T"},
+  {section:"info",num:8,label:"Pourcentage des jeunes ayant intégré un emploi/formation/stage dans les six mois après l'accompagnement",subs:[],sex:"T"},
+  {section:"info",num:9,label:"Nombre de jeunes ayant bénéficié d'un accompagnement socio-professionnel individualisé formel",subs:[],sex:"FM"},
+  {section:"info",num:17,label:"Nombre de journées d'orientation professionnelles, d'événements et de foires de l'emploi organisés",subs:[],sex:"T"},
+  {section:"info",num:18,label:"Nombre de partenariats noués permettant de renforcer la compréhension des besoins du marché du travail",subs:[],sex:"T"},
+  {section:"info",num:19,label:"Dans quelle mesure les jeunes ont-ils ressenti l'implication et le soutien de leur famille ?",subs:["a) Inexistant","b) Faible","c) Fort","d) Très fort"],sex:"FM"},
+  {section:"info",num:13,label:"Nombre de jeunes bénéficiaires directs bénéficiant d'un programme de mentorat",subs:[],sex:"FM"},
+  {section:"info",num:14,label:"Nombre d'actions de plaidoyer en faveur des jeunes pour un service public renforcé",subs:[],sex:"T"},
+  {section:"form",num:20,label:"Nombre de jeunes bénéficiaires directs participant à une formation dans le cadre du projet",subs:[],sex:"FM"},
+  {section:"form",num:21,label:"Nombre de jeunes bénéficiaires directs ayant terminé la formation",subs:[],sex:"FM"},
+  {section:"form",num:22,label:"Nombre de jeunes bénéficiaires directs qui abandonnent leur formation et causes de l'abandon",subs:["a) Maladie ou accident","b) Raisons familiales","c) Mariage","d) Démotivation","e) Manque de ressources économiques","f) Autre"],sex:"FM"},
+  {section:"form",num:23,label:"Situation des jeunes bénéficiaires directs 12 mois après leur sortie d'une cohorte de formation",subs:["a) Emploi salarié à durée indéterminée dans le secteur formel","b) Emploi salarié à durée déterminée dans le secteur formel","c) Emploi dans le secteur informel","d) Auto-emploi / entrepreneuriat","e) Retour en formation professionnelle","f) Poursuite en étude supérieure","g) Stage","h) Sans aucune activité","i) Sans nouvelle"],sex:"FM"},
+  {section:"form",num:25,label:"Accessibilité des femmes aux infrastructures des centres de formation",subs:["a) Non sécurisées et non adaptées","b) Adaptées mais peu sécurisées","c) Sécurisées mais peu adaptées","d) Sécurisées et adaptées"],sex:"F"},
+  {section:"form",num:26,label:"Nombre de jeunes directement formés ayant obtenu une attestation de compétences",subs:[],sex:"FM"},
+  {section:"form",num:27,label:"Évolution des compétences acquises par les jeunes",subs:["a) Pas du tout amélioré","b) Peu amélioré","c) Amélioré","d) Beaucoup amélioré"],sex:"FM"},
+  {section:"form",num:28,label:"Adaptation des formations aux contraintes des femmes ayant un ou plusieurs enfants à charge",subs:["a) Pas du tout adaptée","b) Peu adaptée","c) Adaptée","d) Très adaptée"],sex:"F"},
+  {section:"form",num:29,label:"Nombre de jeunes bénéficiaires directs en alternance ou alternant formation et travail",subs:[],sex:"FM"},
+  {section:"form",num:30,label:"Proportion de jeunes formés par des formats adaptés ayant trouvé un emploi ou lancé son entreprise",subs:[],sex:"T"},
+  {section:"form",num:31,label:"Évolution du score d'évaluation des compétences comportementales (soft skills)",subs:["a) Nombre de jeunes dont le score a évolué positivement","b) Nombre de jeunes dont le score a stagné","c) Nombre de jeunes dont le score a évolué négativement"],sex:"FM"},
+  {section:"insert",num:35,label:"Nombre de jeunes bénéficiaires directs ayant constaté une augmentation de leurs revenus dans les 6 à 12 mois",subs:["a) Dans les 6 mois","b) Dans les 12 mois"],sex:"FM"},
+  {section:"insert",num:45,label:"Nombre de conventions signées avec des entreprises pour l'insertion professionnelle des jeunes",subs:[],sex:"T"},
+  {section:"insert",num:46,label:"Pourcentage de jeunes accompagnés ayant trouvé un débouché professionnel grâce aux conventions",subs:[],sex:"T"},
+  {section:"insert",num:38,label:"Pourcentage de jeunes ayant trouvé un emploi grâce à un système d'intermédiation",subs:[],sex:"T"},
+  {section:"insert",num:47,label:"Nombre de femmes porteuses de projet parmi celles accompagnées",subs:[],sex:"F"},
+  {section:"insert",num:48,label:"Pourcentage de femmes ayant concrétisé leurs projets",subs:[],sex:"F"},
+  {section:"insert",num:41,label:"Pourcentage de jeunes engagés dans une démarche entrepreneuriale après une formation",subs:["a) Dans les 6 mois","b) Dans les 9 mois","c) Dans les 12 mois"],sex:"FM"},
+  {section:"insert",num:42,label:"Pourcentage de jeunes ayant amélioré leurs connaissances de la terminologie financière de base",subs:[],sex:"FM"},
+  {section:"insert",num:43,label:"Nombre de jeunes bénéficiaires directs participant à des formations spécifiques sur l'entrepreneuriat",subs:[],sex:"FM"},
+  {section:"insert",num:44,label:"Nombre d'entreprises/micro-entreprises/start-up créées jusqu'à 6 mois après la fin du projet",subs:[],sex:"T"},
+  {section:"insert",num:49,label:"Pourcentage d'entreprises/start-up soutenues par le projet qui survivent pendant la première année",subs:[],sex:"T"},
+  {section:"insert",num:50,label:"Pourcentage des fonds dédiés au soutien à des projets d'entrepreneuriat portés par des femmes",subs:[],sex:"F"},
+  {section:"insert",num:51,label:"Pourcentage de jeunes ayant obtenu un ou plusieurs financements externes",subs:[],sex:"FM"},
+];
+const OCU_PIK_LIST = buildOCUList(OCU_PIK_RAW, "OCU");
+
+// ─── OCU SAINT LOUIS DATA ───
+const OCU_SL_SECTIONS = OCU_PIK_SECTIONS;
+const OCU_SL_RAW = [
+  {section:"gen",num:1,label:"Nombre de jeunes participant.e.s (désaggrégé par sexe et groupes d'âge) qui bénéficient annuellement et directement du projet",subs:["a) Moins de 15 ans","b) De 15 à 18 ans","c) De 18 à 30 ans","d) Plus de 30 ans"],sex:"FM"},
+  {section:"gen",num:2,label:"Nombre de jeunes parmi les bénéficiaires directs identifiés comme appartenant à un ou plusieurs groupes en situation de vulnérabilité",subs:["a) Jeunes femmes seules avec enfants","b) Migrants ou déplacés internes","c) Jeunes issus de minorités ou de groupes marginalisés","d) Orphelins ou enfants des rues","e) Personnes en situation de handicap","f) Autres"],sex:"FM"},
+  {section:"gen",num:3,label:"Nombre de jeunes (désagréger par sexe) satisfaits du projet",subs:["a) Très satisfait","b) Satisfait","c) Peu satisfait","d) Pas du tout satisfait"],sex:"FM"},
+  {section:"gen",num:4,label:"Nombre de jeunes bénéficiaires directs bénéficiant d'un accompagnement psychosocial",subs:[],sex:"FM"},
+  {section:"gen",num:5,label:"Pourcentage de jeunes bénéficiaires directs ayant reçu un accompagnement psychosocial et ayant trouvé un stage ou emploi",subs:[],sex:"T"},
+  {section:"gen",num:6,label:"Pourcentage de jeunes signalant une plus grande confiance dans leurs compétences à trouver un emploi",subs:[],sex:"T"},
+  {section:"gen",num:7,label:"Genre — Pourcentage du budget alloué aux activités visant à réduire les écarts entre les sexes",subs:[],sex:"T"},
+  {section:"info",num:8,label:"Pourcentage des jeunes ayant intégré un emploi/formation/stage dans les six mois après l'accompagnement",subs:[],sex:"T"},
+  {section:"info",num:9,label:"Nombre de jeunes ayant bénéficié d'un accompagnement socio-professionnel individualisé formel",subs:[],sex:"FM"},
+  {section:"info",num:10,label:"Nombre d'événements et de foires de l'emploi organisés",subs:[],sex:"T"},
+  {section:"info",num:11,label:"Pourcentage de filles mères et déscolarisées participant directement au projet ayant terminé une formation",subs:[],sex:"F"},
+  {section:"info",num:12,label:"Perception des jeunes bénéficiaires directs sur l'accessibilité des services d'accompagnement fournis",subs:[],sex:"FM"},
+  {section:"info",num:15,label:"Dans quelle mesure les jeunes ont-ils ressenti l'implication et le soutien de leur famille ?",subs:["a) Inexistant","b) Faible","c) Fort","d) Très fort"],sex:"FM"},
+  {section:"info",num:16,label:"Perception des parents sur le parcours professionnel et de formation",subs:[],sex:"FM"},
+  {section:"info",num:13,label:"Nombre de jeunes bénéficiaires directs bénéficiant d'un programme de mentorat",subs:[],sex:"FM"},
+  {section:"info",num:14,label:"Nombre d'actions de plaidoyer en faveur des jeunes pour un service public renforcé",subs:[],sex:"T"},
+  {section:"form",num:20,label:"Nombre de jeunes bénéficiaires directs participant à une formation dans le cadre du projet",subs:[],sex:"FM"},
+  {section:"form",num:21,label:"Nombre de jeunes bénéficiaires directs ayant terminé la formation",subs:[],sex:"FM"},
+  {section:"form",num:22,label:"Nombre de jeunes bénéficiaires directs qui abandonnent leur formation et causes de l'abandon",subs:["a) Maladie ou accident","b) Raisons familiales","c) Mariage","d) Démotivation","e) Manque de ressources économiques","f) Autre"],sex:"FM"},
+  {section:"form",num:23,label:"Situation des jeunes bénéficiaires directs 12 mois après leur sortie d'une cohorte de formation",subs:["a) Emploi salarié à durée indéterminée dans le secteur formel","b) Emploi salarié à durée déterminée dans le secteur formel","c) Emploi dans le secteur informel","d) Auto-emploi / entrepreneuriat","e) Retour en formation professionnelle","f) Poursuite en étude supérieure","g) Stage","h) Sans aucune activité","i) Sans nouvelle"],sex:"FM"},
+  {section:"form",num:24,label:"Taux de réussite de filles/femmes inscrites à des formations traditionnellement réservées aux hommes",subs:[],sex:"F"},
+  {section:"form",num:25,label:"Accessibilité des femmes aux infrastructures des centres de formation",subs:["a) Non sécurisées et non adaptées","b) Adaptées mais peu sécurisées","c) Sécurisées mais peu adaptées","d) Sécurisées et adaptées"],sex:"F"},
+  {section:"form",num:26,label:"Nombre de jeunes directement formés ayant obtenu une attestation de compétences",subs:[],sex:"FM"},
+  {section:"form",num:27,label:"Évolution des compétences acquises par les jeunes",subs:["a) Pas du tout amélioré","b) Peu amélioré","c) Amélioré","d) Beaucoup amélioré"],sex:"FM"},
+  {section:"form",num:28,label:"Adaptation des formations aux contraintes des femmes ayant un ou plusieurs enfants à charge",subs:["a) Pas du tout adaptée","b) Peu adaptée","c) Adaptée","d) Très adaptée"],sex:"F"},
+  {section:"form",num:32,label:"Taux d'insertion des jeunes bénéficiaires directs en alternance à la fin de leur formation",subs:[],sex:"T"},
+  {section:"form",num:33,label:"Nombre de conventions signées avec des entreprises du secteur privé pour faciliter l'insertion",subs:[],sex:"T"},
+  {section:"form",num:29,label:"Nombre de jeunes bénéficiaires directs en alternance ou alternant travail et formation",subs:[],sex:"FM"},
+  {section:"form",num:34,label:"Taux d'accès aux formations des personnes souffrant d'un handicap parmi les jeunes bénéficiaires",subs:[],sex:"T"},
+  {section:"form",num:31,label:"Évolution du score d'évaluation des compétences comportementales (soft skills)",subs:["a) Nombre de jeunes dont le score a évolué positivement","b) Nombre de jeunes dont le score a stagné","c) Nombre de jeunes dont le score a évolué négativement"],sex:"FM"},
+  {section:"insert",num:35,label:"Nombre de jeunes bénéficiaires directs ayant constaté une augmentation de leurs revenus",subs:["a) Dans les 6 mois","b) Dans les 12 mois"],sex:"FM"},
+  {section:"insert",num:36,label:"Pourcentage de jeunes directement accompagnés ayant trouvé un débouché professionnel grâce aux conventions",subs:[],sex:"T"},
+  {section:"insert",num:37,label:"Nombre de jeunes bénéficiaires directs intégrant un incubateur",subs:[],sex:"FM"},
+  {section:"insert",num:38,label:"Pourcentage de jeunes ayant trouvé un emploi grâce à un système d'intermédiation",subs:[],sex:"T"},
+  {section:"insert",num:39,label:"Pourcentage de jeunes bénéficiaires directs ayant accès à la terre après la formation",subs:[],sex:"T"},
+  {section:"insert",num:40,label:"Pourcentage de jeunes bénéficiaires directs ayant accès à un financement",subs:[],sex:"T"},
+  {section:"insert",num:41,label:"Pourcentage de jeunes engagés dans une démarche entrepreneuriale après une formation",subs:["a) Dans les 6 mois","b) Dans les 9 mois","c) Dans les 12 mois"],sex:"FM"},
+  {section:"insert",num:42,label:"Pourcentage de jeunes ayant amélioré leurs connaissances de la terminologie financière de base",subs:[],sex:"FM"},
+  {section:"insert",num:43,label:"Nombre de jeunes bénéficiaires directs participant à des formations spécifiques sur l'entrepreneuriat",subs:[],sex:"FM"},
+  {section:"insert",num:44,label:"Pourcentage d'entreprises/start-up soutenues par le projet qui survivent pendant la première année",subs:[],sex:"T"},
+];
+const OCU_SL_LIST = buildOCUList(OCU_SL_RAW, "OCU");
+
+// ─── PROGRAM DATA MAP ───
+const PROGRAM_DATA = {
+  "NUT":        { sections: NUT_SECTIONS,     list: NUT_LIST },
+  "EDU-PIKINE": { sections: EDU_PIK_SECTIONS, list: EDU_PIK_LIST },
+  "EDU-SL":     { sections: EDU_SL_SECTIONS,  list: EDU_SL_LIST },
+  "OCU-PIKINE": { sections: OCU_PIK_SECTIONS, list: OCU_PIK_LIST },
+  "OCU-SL":     { sections: OCU_SL_SECTIONS,  list: OCU_SL_LIST },
+};
+
+// ─── STORAGE KEYS ───
+function getZone() {
+  if(currentEntity === "EVE" && currentProgram === "NUT") {
+    return document.getElementById("zone").value;
+  }
+  return "";
+}
+function storageKey() {
+  const z = getZone();
+  return `kpi_${currentProgram}_${currentEntity}${z?"_"+z:""}_${document.getElementById("periodo").value}_${document.getElementById("anio").value}`;
+}
+function blockedKey() { return storageKey() + "_sent"; }
+
+// ─── ENTITY CHANGE ───
+function onEntityChange() {
+  currentEntity = document.getElementById("entidad").value;
+  const programs = currentEntity ? (ENTITY_PROGRAMS[currentEntity] || []) : [];
+  // Show/hide tabs
+  document.querySelectorAll(".program-tab").forEach(t => {
+    const prog = t.dataset.prog;
+    t.classList.toggle("hidden", !programs.includes(prog));
+    t.classList.remove("active");
+  });
+  // Auto-select first program
+  if(programs.length) {
+    switchProgram(programs[0]);
+  } else {
+    currentProgram = null;
+    document.getElementById("tableContainer").innerHTML = '<div class="no-program">Sélectionnez votre entité pour afficher les indicateurs.</div>';
+    document.getElementById("progressCard").style.display = "none";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("blockedBanner").classList.remove("show");
+  }
+  // Show zone selector only for EVE on NUT
+  updateZoneVisibility();
+}
+
+function updateZoneVisibility() {
+  const show = currentEntity === "EVE" && currentProgram === "NUT";
+  document.getElementById("zoneGroup").style.display = show ? "" : "none";
+}
+
+function onZoneChange() {
+  checkBlocked();
+  loadSaved();
+}
+
+function switchProgram(prog) {
+  currentProgram = prog;
+  document.querySelectorAll(".program-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.prog === prog);
+  });
+  updateZoneVisibility();
+  buildTable();
+  checkBlocked();
+  loadSaved();
+}
+
+function onContextChange() { checkBlocked(); loadSaved(); }
+
+// ─── BUILD TABLE ───
 function buildTable() {
+  if(!currentProgram) return;
+  const {sections, list} = PROGRAM_DATA[currentProgram];
   const container = document.getElementById("tableContainer");
   container.innerHTML = "";
-  SECTIONS.forEach(sec => {
-    const rows = KPI_LIST.filter(k => k.s === sec.id);
+  document.getElementById("progressCard").style.display = "flex";
+
+  sections.forEach(sec => {
+    const rows = list.filter(k => k.s === sec.id);
     if(!rows.length) return;
-    const editableRows = rows.filter(k => k.kind !== "parent");
+    const editableRows = rows.filter(k => k.kind !== "parent" && k.kind !== "parent_text");
+
     const hdr = document.createElement("div");
     hdr.className = "section-header";
-    hdr.dataset.section = sec.id;
+    hdr.dataset.section = sec.id + "_" + currentProgram;
     hdr.innerHTML = `<span class="section-pill ${sec.pillClass}">${sec.pill}</span><span class="section-name">${sec.label}</span><span class="section-count">${editableRows.length} indicateurs</span><span class="section-chevron">▼</span>`;
-    hdr.onclick = () => toggleSection(sec.id);
+    hdr.onclick = () => toggleSection(sec.id + "_" + currentProgram);
     container.appendChild(hdr);
+
     const wrap = document.createElement("div");
     wrap.className = "table-wrap";
-    wrap.id = "section-" + sec.id;
-    let html = `<table><thead><tr><th style="width:90px">Code</th><th>Indicateur</th><th style="width:150px">Désagrégation</th><th style="width:110px">Féminin</th><th style="width:110px">Masculin</th><th style="width:110px">Total</th><th style="width:170px">Commentaire</th></tr></thead><tbody>`;
+    wrap.id = "section-" + sec.id + "_" + currentProgram;
+
+    let html = `<table><thead><tr><th style="width:80px">Code</th><th>Indicateur</th><th style="width:140px">Désagrégation</th><th style="width:100px;text-align:center">Féminin</th><th style="width:100px;text-align:center">Masculin</th><th style="width:100px;text-align:center">Total</th><th style="width:155px">Commentaire</th></tr></thead><tbody>`;
+
     rows.forEach(k => {
-      const isEditable = k.kind !== "parent";
-      const rowClass = k.kind === "parent" ? "row-parent" : "row-child";
+      const isEditable = k.kind !== "parent" && k.kind !== "parent_text";
+      const rowClass = (!isEditable) ? "row-parent" : "row-child";
       const indClass = k.kind === "child" ? "sub" : "";
+      const safeCode = k.code.replace(/[^a-zA-Z0-9]/g,'-') + "_" + currentProgram;
       let femCell, masCell, totCell;
-      if(!isEditable) { femCell = masCell = totCell = ""; }
-      else if(k.sex === "FM") {
-        femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-sex="F" oninput="calcTotal(this)" onchange="autoSave()">`;
-        masCell = `<input class="num mas" type="number" min="0" data-code="${k.code}" data-sex="M" oninput="calcTotal(this)" onchange="autoSave()">`;
-        totCell = `<input class="num total-auto" type="number" data-code="${k.code}" readonly tabindex="-1">`;
+      if(!isEditable) {
+        femCell = masCell = totCell = "";
+      } else if(k.sex === "FM") {
+        femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-prog="${currentProgram}" data-sex="F" oninput="calcTotal(this)" onchange="autoSave()">`;
+        masCell = `<input class="num mas" type="number" min="0" data-code="${k.code}" data-prog="${currentProgram}" data-sex="M" oninput="calcTotal(this)" onchange="autoSave()">`;
+        totCell = `<input class="num" type="number" data-code="${k.code}" data-prog="${currentProgram}" readonly tabindex="-1">`;
       } else if(k.sex === "F") {
-        femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-sex="F" onchange="autoSave()">`;
-        masCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">N/A</span>`;
-        totCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">auto</span>`;
+        femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-prog="${currentProgram}" data-sex="F" onchange="autoSave()">`;
+        masCell = `<span class="na-cell">N/A</span>`;
+        totCell = `<span class="na-cell">—</span>`;
       } else {
-        femCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">N/A</span>`;
-        masCell = `<span style="color:var(--text3);font-size:12px;font-style:italic">N/A</span>`;
-        totCell = `<input class="num tot" type="number" min="0" data-code="${k.code}" data-sex="T" onchange="autoSave()">`;
+        femCell = `<span class="na-cell">N/A</span>`;
+        masCell = `<span class="na-cell">N/A</span>`;
+        totCell = `<input class="num tot" type="number" min="0" data-code="${k.code}" data-prog="${currentProgram}" data-sex="T" onchange="autoSave()">`;
       }
-      const commentCell = isEditable ? `<input class="comment" type="text" placeholder="Commentaire..." data-code="${k.code}" onchange="autoSave()">` : "";
-      html += `<tr class="${rowClass}" id="row-${k.code.replace(/[^a-zA-Z0-9]/g,'-')}"><td class="code-cell">${k.code}</td><td class="ind-cell ${indClass}">${k.label}</td><td class="desag-cell">${k.desag||""}</td><td class="val-cell">${femCell}</td><td class="val-cell">${masCell}</td><td class="val-cell">${totCell}</td><td class="comment-cell">${commentCell}</td></tr>`;
+      const commentCell = isEditable ? `<input class="comment" type="text" placeholder="..." data-code="${k.code}" data-prog="${currentProgram}" onchange="autoSave()">` : "";
+      html += `<tr class="${rowClass}" id="row-${safeCode}"><td class="code-cell">${k.code}</td><td class="ind-cell ${indClass}">${k.label}</td><td class="desag-cell">${k.desag||""}</td><td class="val-cell">${femCell}</td><td class="val-cell">${masCell}</td><td class="val-cell">${totCell}</td><td class="comment-cell">${commentCell}</td></tr>`;
     });
     html += "</tbody></table>";
     wrap.innerHTML = html;
@@ -434,161 +845,166 @@ function buildTable() {
 }
 
 function toggleSection(id) {
-  document.getElementById("section-"+id).classList.toggle("collapsed");
-  document.querySelector(`[data-section="${id}"]`).classList.toggle("collapsed");
+  document.getElementById("section-"+id)?.classList.toggle("collapsed");
+  document.querySelector(`[data-section="${id}"]`)?.classList.toggle("collapsed");
 }
 
 function calcTotal(input) {
   const code = input.dataset.code;
-  const fem = document.querySelector(`input.fem[data-code="${code}"]`);
-  const mas = document.querySelector(`input.mas[data-code="${code}"]`);
-  const tot = document.querySelector(`input.total-auto[data-code="${code}"]`);
-  if(tot) tot.value = (fem&&fem.value!==""?parseFloat(fem.value):0) + (mas&&mas.value!==""?parseFloat(mas.value):0);
-  if(input.value !== "") { input.classList.add("filled"); input.closest("tr")?.classList.add("row-filled"); }
+  const prog = input.dataset.prog;
+  const fem = document.querySelector(`input.fem[data-code="${code}"][data-prog="${prog}"]`);
+  const mas = document.querySelector(`input.mas[data-code="${code}"][data-prog="${prog}"]`);
+  const tot = document.querySelector(`input[readonly][data-code="${code}"][data-prog="${prog}"]`);
+  if(tot) tot.value = (fem&&fem.value!==""?parseFloat(fem.value):0)+(mas&&mas.value!==""?parseFloat(mas.value):0);
+  if(input.value!=="") { input.classList.add("filled"); input.closest("tr")?.classList.add("row-filled"); }
   else input.classList.remove("filled");
   updateProgress();
 }
 
 function updateProgress() {
-  const allInputs = document.querySelectorAll("input.num:not(.total-auto):not([readonly])");
-  const filled = [...allInputs].filter(i => i.value !== "").length;
+  const allInputs = document.querySelectorAll(`input.num:not([readonly])`);
+  const filled = [...allInputs].filter(i=>i.value!=="").length;
   const total = allInputs.length;
-  document.getElementById("progressFill").style.width = (total ? Math.round(filled/total*100) : 0) + "%";
-  document.getElementById("progressCount").textContent = `${filled} / ${total} remplis`;
-  document.getElementById("submitContext").textContent = document.getElementById("proyecto").value + " · " + document.getElementById("periodo").value + " " + document.getElementById("anio").value;
-  document.getElementById("submitFilled").textContent = ` · ${filled} valeurs saisies`;
+  document.getElementById("progressFill").style.width=(total?Math.round(filled/total*100):0)+"%";
+  document.getElementById("progressCount").textContent=`${filled} / ${total} remplis`;
+  document.getElementById("submitContext").textContent=`${currentEntity} · ${currentProgram} · ${document.getElementById("periodo").value} ${document.getElementById("anio").value}`;
+  document.getElementById("submitFilled").textContent=` · ${filled} valeurs`;
+  document.getElementById("submitBtn").disabled = !currentProgram;
 }
 
 function clearAll() {
   if(!confirm("Effacer toutes les valeurs saisies ?")) return;
-  document.querySelectorAll("input.num, input.comment").forEach(i => { i.value = ""; i.classList.remove("filled"); });
-  document.querySelectorAll("tr.row-filled").forEach(r => r.classList.remove("row-filled"));
+  document.querySelectorAll("input.num,input.comment").forEach(i=>{i.value="";i.classList.remove("filled")});
+  document.querySelectorAll("tr.row-filled").forEach(r=>r.classList.remove("row-filled"));
   localStorage.removeItem(storageKey());
   updateProgress();
 }
 
-// ── AUTOSAVE ──
-let saveTimer = null;
+let saveTimer=null;
 function autoSave() {
   updateProgress();
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    const data = { _entidad: document.getElementById("entidad").value };
-    document.querySelectorAll("input.num:not(.total-auto), input.comment").forEach(i => {
-      if(i.value !== "") data[i.dataset.code + "_" + (i.dataset.sex || "comment")] = i.value;
+  saveTimer=setTimeout(()=>{
+    const data={};
+    document.querySelectorAll(`input.num:not([readonly])[data-prog="${currentProgram}"],input.comment[data-prog="${currentProgram}"]`).forEach(i=>{
+      if(i.value!=="") data[i.dataset.code+"_"+(i.dataset.sex||"comment")]=i.value;
     });
-    localStorage.setItem(storageKey(), JSON.stringify(data));
-    const msg = document.getElementById("autosaveMsg");
-    msg.textContent = "✓ Sauvegardé automatiquement";
-    msg.className = "autosave saved";
-    setTimeout(() => { msg.textContent = ""; msg.className = "autosave"; }, 2000);
-  }, 800);
+    localStorage.setItem(storageKey(),JSON.stringify(data));
+    const msg=document.getElementById("autosaveMsg");
+    msg.textContent="✓ Sauvegardé";msg.className="autosave saved";
+    setTimeout(()=>{msg.textContent="";msg.className="autosave"},2000);
+  },800);
 }
 
 function loadSaved() {
-  const raw = localStorage.getItem(storageKey());
-  if(!raw) return;
-  const data = JSON.parse(raw);
-  if(data._entidad) document.getElementById("entidad").value = data._entidad;
-  Object.entries(data).forEach(([key, val]) => {
-    if(key === "_entidad") return;
-    const lastUs = key.lastIndexOf("_");
-    const code = key.substring(0, lastUs);
-    const sex = key.substring(lastUs + 1);
+  if(!currentProgram) return;
+  document.querySelectorAll(`input.num,input.comment`).forEach(i=>{i.value="";i.classList.remove("filled")});
+  document.querySelectorAll("tr.row-filled").forEach(r=>r.classList.remove("row-filled"));
+  const raw=localStorage.getItem(storageKey());
+  if(!raw){updateProgress();return;}
+  const data=JSON.parse(raw);
+  Object.entries(data).forEach(([key,val])=>{
+    const lastUs=key.lastIndexOf("_");
+    const code=key.substring(0,lastUs);
+    const sex=key.substring(lastUs+1);
     let el;
-    if(sex === "comment") el = document.querySelector(`input.comment[data-code="${code}"]`);
-    else if(sex === "F") el = document.querySelector(`input.fem[data-code="${code}"]`);
-    else if(sex === "M") el = document.querySelector(`input.mas[data-code="${code}"]`);
-    else el = document.querySelector(`input.tot[data-code="${code}"]`);
-    if(el) { el.value = val; el.classList.add("filled"); el.closest("tr")?.classList.add("row-filled"); }
+    if(sex==="comment") el=document.querySelector(`input.comment[data-code="${code}"][data-prog="${currentProgram}"]`);
+    else if(sex==="F") el=document.querySelector(`input.fem[data-code="${code}"][data-prog="${currentProgram}"]`);
+    else if(sex==="M") el=document.querySelector(`input.mas[data-code="${code}"][data-prog="${currentProgram}"]`);
+    else el=document.querySelector(`input.tot[data-code="${code}"][data-prog="${currentProgram}"]`);
+    if(el){el.value=val;el.classList.add("filled");el.closest("tr")?.classList.add("row-filled");}
   });
-  document.querySelectorAll("input.fem").forEach(f => calcTotal(f));
+  document.querySelectorAll(`input.fem[data-prog="${currentProgram}"]`).forEach(f=>calcTotal(f));
   updateProgress();
-}
-
-function onContextChange() {
-  updateProgress();
-  checkBlocked();
-  loadSaved();
 }
 
 function checkBlocked() {
-  const sent = localStorage.getItem(blockedKey());
-  const banner = document.getElementById("blockedBanner");
-  const btn = document.getElementById("submitBtn");
-  if(sent) {
+  if(!currentProgram){return;}
+  const sent=localStorage.getItem(blockedKey());
+  const banner=document.getElementById("blockedBanner");
+  const btn=document.getElementById("submitBtn");
+  if(sent){
     banner.classList.add("show");
-    const d = new Date(sent);
-    document.getElementById("blockedMsg").textContent = `Vous avez déjà soumis les données le ${d.toLocaleDateString("fr-FR")} à ${d.toLocaleTimeString("fr-FR")}. Contactez nouscims si vous devez faire une correction.`;
-    btn.disabled = true;
-    btn.textContent = "✓ Déjà envoyé";
-    document.querySelectorAll("input.num, input.comment").forEach(i => i.disabled = true);
+    const d=new Date(sent);
+    document.getElementById("blockedMsg").textContent=`Données soumises le ${d.toLocaleDateString("fr-FR")} à ${d.toLocaleTimeString("fr-FR")}. Contactez Nous Cims pour une correction.`;
+    btn.disabled=true;btn.textContent="✓ Déjà envoyé";
+    document.querySelectorAll("input.num,input.comment").forEach(i=>i.disabled=true);
   } else {
     banner.classList.remove("show");
-    btn.disabled = false;
-    btn.textContent = "↑ Envoyer à SharePoint";
-    document.querySelectorAll("input.num, input.comment").forEach(i => i.disabled = false);
+    btn.disabled=false;btn.textContent="↑ Envoyer";
+    document.querySelectorAll("input.num,input.comment").forEach(i=>i.disabled=false);
   }
 }
 
 async function submitData() {
-  const entidad = document.getElementById("entidad").value.trim();
-  if(!entidad) { showToast("Veuillez saisir le nom de votre entité", "error"); document.getElementById("entidad").focus(); return; }
-  const proyecto = document.getElementById("proyecto").value;
-  const periodo  = document.getElementById("periodo").value;
-  const anio     = document.getElementById("anio").value;
-
-  const items = [];
-  KPI_LIST.forEach(k => {
-    if(k.kind === "parent") return;
-    const femEl = document.querySelector(`input.fem[data-code="${k.code}"]`);
-    const masEl = document.querySelector(`input.mas[data-code="${k.code}"]`);
-    const totEl = document.querySelector(`input.tot[data-code="${k.code}"]`);
-    const comEl = document.querySelector(`input.comment[data-code="${k.code}"]`);
-    const comment = comEl?.value || "";
-    const tipoInd = k.code.startsWith("KOI") ? "KOI" : k.code.startsWith("KII") ? "KII" : k.code.startsWith("KPI-P") ? "KPI-P" : "KPI";
-    const base = { Title: k.code, field_1: k.label, field_2: tipoInd, field_3: proyecto, Periodo: periodo, field_4: parseInt(anio), Desgregaci_n: k.desag, Comentario: comment, Fecha_Evento: new Date().toISOString().split(".")[0]+"Z", Entidad: entidad };
-    if(femEl && femEl.value !== "") items.push({ ...base, field_6: "Féminin", field_7: parseFloat(femEl.value) });
-    if(masEl && masEl.value !== "" && k.sex === "FM") items.push({ ...base, field_6: "Masculin", field_7: parseFloat(masEl.value) });
-    if(totEl && totEl.value !== "") items.push({ ...base, field_6: "N/A", field_7: parseFloat(totEl.value) });
+  if(!currentEntity){showToast("Sélectionnez votre entité","error");return;}
+  if(!currentProgram){showToast("Sélectionnez un programme","error");return;}
+  const periodo=document.getElementById("periodo").value;
+  const anio=document.getElementById("anio").value;
+  const {list}=PROGRAM_DATA[currentProgram];
+  const items=[];
+  list.forEach(k=>{
+    if(k.kind==="parent"||k.kind==="parent_text") return;
+    const prog=currentProgram;
+    const femEl=document.querySelector(`input.fem[data-code="${k.code}"][data-prog="${prog}"]`);
+    const masEl=document.querySelector(`input.mas[data-code="${k.code}"][data-prog="${prog}"]`);
+    const totEl=document.querySelector(`input.tot[data-code="${k.code}"][data-prog="${prog}"]`);
+    const comEl=document.querySelector(`input.comment[data-code="${k.code}"][data-prog="${prog}"]`);
+    const comment=comEl?.value||"";
+    const PREFIX={"NUT":"NUT","EDU-PIKINE":"EDU-PIK","EDU-SL":"EDU-SL","OCU-PIKINE":"OCU-PIK","OCU-SL":"OCU-SL"};
+    const zone=getZone();
+    const prefix=(PREFIX[currentProgram]||currentProgram)+(zone?"-"+zone:"");
+    const prefixedCode=prefix+"-"+k.code;
+    const isOCU=currentProgram.startsWith("OCU");
+    const tipoInd=isOCU?"":k.code.startsWith("KOI")?"KOI":k.code.startsWith("KII")?"KII":k.code.startsWith("KPI-P")?"KPI-P":"KPI";
+    const base={Title:prefixedCode,field_1:k.label,field_2:tipoInd,field_3:currentEntity,Periodo:periodo,field_4:parseInt(anio),Desgregaci_n:k.desag,Comentario:comment,Fecha_Evento:new Date().toISOString().split(".")[0]+"Z",Entidad:currentEntity,Programa:currentProgram};
+    if(femEl&&femEl.value!=="") items.push({...base,field_6:"Féminin",field_7:parseFloat(femEl.value)});
+    if(masEl&&masEl.value!==""&&k.sex==="FM") items.push({...base,field_6:"Masculin",field_7:parseFloat(masEl.value)});
+    if(totEl&&totEl.value!=="") items.push({...base,field_6:"N/A",field_7:parseFloat(totEl.value)});
   });
-
-  if(!items.length) { showToast("Aucune valeur saisie", "error"); return; }
-
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true;
-  btn.textContent = "⏳ Envoi en cours...";
-
-  try {
-    const resp = await fetch(PROXY_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(items) });
-    const result = await resp.json();
-    if(result.fail === 0) {
-      localStorage.setItem(blockedKey(), new Date().toISOString());
-      showToast(`✓ ${result.ok} valeurs envoyées avec succès !`, "success");
+  if(!items.length){showToast("Aucune valeur saisie","error");return;}
+  const btn=document.getElementById("submitBtn");
+  btn.disabled=true;btn.textContent="⏳ Envoi...";
+  try{
+    const resp=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(items)});
+    const result=await resp.json();
+    if(result.fail===0){
+      localStorage.setItem(blockedKey(),new Date().toISOString());
+      showToast(`✓ ${result.ok} valeurs envoyées !`,"success");
       checkBlocked();
     } else {
-      showToast(`${result.ok} OK · ${result.fail} erreurs`, "error");
-      btn.disabled = false;
-      btn.textContent = "↑ Envoyer à SharePoint";
+      showToast(`${result.ok} OK · ${result.fail} erreurs`,"error");
+      btn.disabled=false;btn.textContent="↑ Envoyer";
     }
-  } catch(e) {
-    showToast("Erreur de connexion: " + e.message, "error");
-    btn.disabled = false;
-    btn.textContent = "↑ Envoyer à SharePoint";
+  }catch(e){
+    showToast("Erreur de connexion: "+e.message,"error");
+    btn.disabled=false;btn.textContent="↑ Envoyer";
   }
 }
 
-function showToast(msg, type="") {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast show " + type;
-  setTimeout(() => t.classList.remove("show"), 4500);
+function showToast(msg,type=""){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.className="toast show "+type;
+  setTimeout(()=>t.classList.remove("show"),4500);
 }
 
-buildTable();
-updateProgress();
-checkBlocked();
-loadSaved();
+// Build program tabs
+(function(){
+  const tabs=document.getElementById("programTabs");
+  Object.entries(PROGRAM_META).forEach(([prog,meta])=>{
+    const btn=document.createElement("button");
+    btn.className=`program-tab ${meta.cls} hidden`;
+    btn.dataset.prog=prog;
+    btn.textContent=meta.label;
+    btn.onclick=()=>switchProgram(prog);
+    tabs.appendChild(btn);
+  });
+  // Also add EVE to NUT SL since it appears in both Pikine and SL
+  ENTITY_PROGRAMS["EVE"] = ["NUT"];
+  // initial state
+  document.getElementById("tableContainer").innerHTML='<div class="no-program">Sélectionnez votre entité pour afficher les indicateurs.</div>';
+})();
 </script>
 </body>
 </html>
+
