@@ -620,7 +620,8 @@ function buildOCUList(indList, prefix) {
     if(subs && subs.length) {
       result.push({s, code, label, desag:"", kind:"parent_text", sex: sex||"FM"});
       subs.forEach((sub,i) => {
-        result.push({s, code:`${code}.${i+1}`, label: sub.replace(/^[a-z]\)\s*/,""), desag:sub.replace(/^([a-z]\))\s*.*/,"$1"), kind:"child", sex:sex||"FM"});
+        const cleanLabel = sub.replace(/^[a-z]\)\s*/,"");
+        result.push({s, code:`${code}.${i+1}`, label: cleanLabel, desag:cleanLabel, kind:"child", sex:sex||"FM"});
       });
     } else {
       result.push({s, code, label, desag:"", kind:"single", sex: sex||"FM"});
@@ -1025,5 +1026,6 @@ function showToast(msg,type=""){
 </script>
 </body>
 </html>
+
 
 
