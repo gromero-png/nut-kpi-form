@@ -941,6 +941,20 @@ async function submitData() {
   const periodo=document.getElementById("periodo").value;
   const anio=document.getElementById("anio").value;
   const {list}=PROGRAM_DATA[currentProgram];
+  // Build parent label lookup for sub-items
+  const parentLabel={};
+  list.forEach(k=>{
+    if(k.kind==="parent"||k.kind==="parent_text") {
+      // store label keyed by base code (strip trailing dots)
+      parentLabel[k.code]=k.label;
+    }
+  });
+  function getParentCode(code) {
+    // e.g. "OCU-1.3" -> "OCU-1", "KPI2.1" -> "KPI2"
+    const dot = code.lastIndexOf(".");
+    return dot>0 ? code.substring(0,dot) : null;
+  }
+
   const items=[];
   list.forEach(k=>{
     if(k.kind==="parent"||k.kind==="parent_text") return;
@@ -953,10 +967,15 @@ async function submitData() {
     const PREFIX={"NUT":"NUT","EDU-PIKINE":"EDU-PIK","EDU-SL":"EDU-SL","OCU-PIKINE":"OCU-PIK","OCU-SL":"OCU-SL"};
     const zone=getZone();
     const prefix=(PREFIX[currentProgram]||currentProgram)+(zone?"-"+zone:"");
-    const prefixedCode=prefix+"-"+k.code;
+    const prefixedCode=prefix+"-"+currentEntity+"-"+k.code;
     const isOCU=currentProgram.startsWith("OCU");
     const tipoInd=isOCU?"":k.code.startsWith("KOI")?"KOI":k.code.startsWith("KII")?"KII":k.code.startsWith("KPI-P")?"KPI-P":"KPI";
-    const base={Title:prefixedCode,field_1:k.label,field_2:tipoInd,field_3:currentEntity,Periodo:periodo,field_4:parseInt(anio),Desgregaci_n:k.desag,Comentario:comment,Fecha_Evento:new Date().toISOString().split(".")[0]+"Z",Entidad:currentEntity,Programa:currentProgram};
+    // Full indicator label: for child rows, prepend parent label
+    const parentCode=getParentCode(k.code);
+    const fullLabel = (k.kind==="child" && parentCode && parentLabel[parentCode])
+      ? parentLabel[parentCode]+" · "+k.label
+      : k.label;
+    const base={Title:prefixedCode,field_1:fullLabel,field_2:tipoInd,field_3:currentEntity,Periodo:periodo,field_4:parseInt(anio),Desgregaci_n:k.desag,Comentario:comment,Fecha_Evento:new Date().toISOString().split(".")[0]+"Z",Entidad:currentEntity,Programa:currentProgram};
     if(femEl&&femEl.value!=="") items.push({...base,field_6:"Féminin",field_7:parseFloat(femEl.value)});
     if(masEl&&masEl.value!==""&&k.sex==="FM") items.push({...base,field_6:"Masculin",field_7:parseFloat(masEl.value)});
     if(totEl&&totEl.value!=="") items.push({...base,field_6:"N/A",field_7:parseFloat(totEl.value)});
@@ -1006,3 +1025,4 @@ function showToast(msg,type=""){
 </script>
 </body>
 </html>
+
