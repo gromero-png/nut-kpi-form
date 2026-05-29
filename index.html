@@ -103,6 +103,8 @@ input.comment:focus{outline:none;border-color:var(--accent2)}
 .toast.success{background:var(--green)}
 .toast.error{background:var(--red)}
 .no-program{text-align:center;padding:60px 24px;color:var(--text3);font-size:15px}
+.instructions{background:var(--orange-light);border:1.5px solid var(--orange);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;font-size:13px;color:var(--text2);line-height:1.5}
+.instructions strong{color:var(--orange)}
 </style>
 </head>
 <body>
@@ -168,6 +170,10 @@ input.comment:focus{outline:none;border-color:var(--accent2)}
     </div>
   </div>
 
+  <div class="instructions">
+    ⚠️ <strong>Important :</strong> Saisissez uniquement les valeurs de <strong>cette période</strong> (PAS le cumul depuis le début du projet). Exemple : si vous avez touché 50 personnes au semestre précédent et 30 ce semestre, saisissez <strong>30</strong>, pas 80. Laissez la case <strong>vide</strong> si l'indicateur ne s'applique pas ; saisissez <strong>0</strong> s'il n'y a eu aucune activité ce semestre.
+  </div>
+
   <div class="program-tabs" id="programTabs"></div>
 
   <div class="blocked-banner" id="blockedBanner">
@@ -195,7 +201,6 @@ input.comment:focus{outline:none;border-color:var(--accent2)}
   </div>
 </div>
 <div class="toast" id="toast"></div>
-
 <script>
 const PROXY_URL = "https://nut-kpi-proxy.onrender.com/submit";
 
@@ -220,6 +225,14 @@ const ENTITY_PROGRAMS = {
   "GPES":            ["OCU-SL"],
   "Forut":           ["OCU-SL"],
 };
+
+// ─── INDICATEURS ANÉMIE : visibles uniquement pour Agora et Toubabs ───
+const ANEMIA_CODES = ["KPI9","KPI10","KPI11","KPI12","KPI20","KPI21","KPI22","KPI23"];
+const ANEMIA_ENTITIES = ["Agora","Toubabs"];
+function anemiaBaseCode(code){ return code.split(".")[0]; }
+function isAnemiaHidden(code){
+  return ANEMIA_CODES.includes(anemiaBaseCode(code)) && !ANEMIA_ENTITIES.includes(currentEntity);
+}
 
 const PROGRAM_META = {
   "NUT":        { label:"🌿 NUT — Nutrition",       cls:"nut",       color:"var(--accent)" },
@@ -264,19 +277,14 @@ const NUT_LIST = [
   {s:"kpi",code:"KPI8",label:"Nombre d'enfants dépistés présentant une insuffisance pondérale",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI8.1",label:"Insuffisance pondérale",desag:"0 à 2 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI8.2",label:"Insuffisance pondérale",desag:"2 à 5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI8.3",label:"Insuffisance pondérale",desag:">5 Ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI9",label:"Nombre d'enfants ayant bénéficié d'une mesure d'hémoglobine",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI9.1",label:"Mesure d'hémoglobine",desag:"0 à 5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI9.2",label:"Mesure d'hémoglobine",desag:">5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI10",label:"Nombre d'enfants dépistés souffrant d'anémie (hémoglobine <110 g/L)",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI10.1",label:"Anémie",desag:"0 à 5 ans",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI10.2",label:"Anémie",desag:">5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI11",label:"Nombre d'enfants ayant reçu des suppléments de fer — doses préventives",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI11.1",label:"Suppléments fer préventifs",desag:"6 à 59 mois",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI11.2",label:"Suppléments fer préventifs",desag:">5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI12",label:"Nombre d'enfants ayant reçu des suppléments de fer — doses curatives",desag:"",kind:"parent",sex:"FM"},
   {s:"kpi",code:"KPI12.1",label:"Suppléments fer curatifs",desag:"6 à 59 mois",kind:"child",sex:"FM"},
-  {s:"kpi",code:"KPI12.2",label:"Suppléments fer curatifs",desag:">5 ans",kind:"child",sex:"FM"},
   {s:"kpi",code:"KPI13",label:"Nombre d'enfants âgés de 12 à 59 mois ayant reçu des médicaments antiparasitaires",desag:"",kind:"single",sex:"T"},
   {s:"kpi",code:"KPI14",label:"Nombre d'enfants (0-5 ans) ayant bénéficié de visites à domicile",desag:"",kind:"single",sex:"FM"},
   {s:"kpi",code:"KPI16",label:"Nombre de Femmes (Gardiens/ennes, Pères) directement impactées",desag:"",kind:"single",sex:"FM"},
@@ -308,7 +316,6 @@ const NUT_LIST = [
   {s:"kpi",code:"KPI23.1",label:"Suppléments fer curatifs",desag:"enceinte",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI23.2",label:"Suppléments fer curatifs",desag:"allaitantes",kind:"child",sex:"F"},
   {s:"kpi",code:"KPI23.3",label:"Suppléments fer curatifs",desag:"En âge de procréer (NENA)",kind:"child",sex:"F"},
-  {s:"kpi",code:"KPI24",label:"Nombre de femmes ayant reçu des médicaments antiparasitaires pendant la grossesse",desag:"enceinte",kind:"single",sex:"F"},
   {s:"kpi",code:"KPI25",label:"Nombre de mères/gardiennes participant aux activités de production alimentaire",desag:"",kind:"single",sex:"T"},
   {s:"kpi",code:"KPI26",label:"Nombre de mères/gardiennes ayant participé à des formations entrepreneuriales",desag:"",kind:"single",sex:"T"},
   {s:"kpi",code:"KPI27",label:"Nombre de mères/gardiennes ayant bénéficié d'un crédit pour AGR",desag:"",kind:"single",sex:"T"},
@@ -351,24 +358,11 @@ const NUT_LIST = [
   {s:"koi",code:"KOIE9",label:"Nombre de familles qui ont reproduit des jardins dans leurs maisons",desag:"",kind:"single",sex:"T"},
   {s:"koi",code:"KOIE10",label:"Nombre moyen de produits cultivés par les ménages pour leur propre consommation",desag:"",kind:"single",sex:"T"},
   {s:"koi",code:"KOIE11",label:"Pourcentage de mères bénéficiaires qui déclarent avoir obtenu un revenu complémentaire grâce à l'AGI",desag:"",kind:"single",sex:"T"},
-  {s:"kii",code:"KII1",label:"Pourcentage d'enfants âgés de 0 à 59 mois présentant un retard de croissance",desag:"",kind:"parent",sex:"T"},
-  {s:"kii",code:"KII1.1",label:"% retard de croissance",desag:"0-2 ans",kind:"child",sex:"T"},
-  {s:"kii",code:"KII1.2",label:"% retard de croissance",desag:"2-5 ans",kind:"child",sex:"T"},
-  {s:"kii",code:"KII2",label:"Pourcentage d'enfants âgés de 0 à 59 mois souffrant d'émaciation",desag:"",kind:"parent",sex:"T"},
-  {s:"kii",code:"KII2.1",label:"% émaciation",desag:"MAM",kind:"child",sex:"T"},
-  {s:"kii",code:"KII2.2",label:"% émaciation",desag:"MAS",kind:"child",sex:"T"},
   {s:"kii",code:"KII3",label:"Pourcentage d'enfants de 0 à 6 mois bénéficiant d'un allaitement exclusif",desag:"",kind:"single",sex:"T"},
   {s:"kii",code:"KII4",label:"Pourcentage de nouveau-nés allaités dans la première heure de vie",desag:"",kind:"single",sex:"T"},
   {s:"kii",code:"KII5",label:"Pourcentage d'enfants de 6 à 23 mois qui reçoivent un apport alimentaire minimum acceptable",desag:"",kind:"single",sex:"T"},
   {s:"kii",code:"KII6",label:"Pourcentage de mères/gardiens/pères appliquant les bonnes pratiques de lavage des mains",desag:"",kind:"single",sex:"T"},
   {s:"kii",code:"KII7",label:"Score de diversité alimentaire à domicile (HDDS)",desag:"",kind:"single",sex:"T"},
-  {s:"kii",code:"KII8",label:"Pourcentage d'enfants âgés de 6 à 59 mois souffrant d'anémie",desag:"",kind:"parent",sex:"T"},
-  {s:"kii",code:"KII8.1",label:"% anémie enfants",desag:"0-2 ans",kind:"child",sex:"T"},
-  {s:"kii",code:"KII8.2",label:"% anémie enfants",desag:"2-5 ans",kind:"child",sex:"T"},
-  {s:"kii",code:"KII9",label:"Pourcentage de femmes (E/A/NENA) souffrant d'anémie",desag:"",kind:"parent",sex:"F"},
-  {s:"kii",code:"KII9.1",label:"% anémie femmes",desag:"enceinte",kind:"child",sex:"F"},
-  {s:"kii",code:"KII9.2",label:"% anémie femmes",desag:"allaitantes",kind:"child",sex:"F"},
-  {s:"kii",code:"KII9.3",label:"% anémie femmes",desag:"en âge de procréer (NENA)",kind:"child",sex:"F"},
   {s:"kpip",code:"KPI-P1",label:"Révisions Scolaires",desag:"",kind:"single",sex:"T"},
   {s:"kpip",code:"KPI-P2",label:"Bourses santé",desag:"",kind:"single",sex:"T"},
 ];
@@ -612,7 +606,6 @@ const OCU_PIK_SECTIONS = [
 ];
 
 function buildOCUList(indList, prefix) {
-  // indList: array of {num, label, subs, sex}
   const result = [];
   indList.forEach(({num, label, subs, sex, section}) => {
     const code = `${prefix}-${num}`;
@@ -744,13 +737,11 @@ function blockedKey() { return storageKey() + "_sent"; }
 function onEntityChange() {
   currentEntity = document.getElementById("entidad").value;
   const programs = currentEntity ? (ENTITY_PROGRAMS[currentEntity] || []) : [];
-  // Show/hide tabs
   document.querySelectorAll(".program-tab").forEach(t => {
     const prog = t.dataset.prog;
     t.classList.toggle("hidden", !programs.includes(prog));
     t.classList.remove("active");
   });
-  // Auto-select first program
   if(programs.length) {
     switchProgram(programs[0]);
   } else {
@@ -760,7 +751,6 @@ function onEntityChange() {
     document.getElementById("submitBtn").disabled = true;
     document.getElementById("blockedBanner").classList.remove("show");
   }
-  // Show zone selector only for EVE on NUT
   updateZoneVisibility();
 }
 
@@ -791,12 +781,14 @@ function onContextChange() { checkBlocked(); loadSaved(); }
 function buildTable() {
   if(!currentProgram) return;
   const {sections, list} = PROGRAM_DATA[currentProgram];
+  // Filtrar indicateurs anémie (KPI9-12, KPI20-23) : visibles uniquement pour Agora et Toubabs
+  const visibleList = list.filter(k => !(currentProgram === "NUT" && isAnemiaHidden(k.code)));
   const container = document.getElementById("tableContainer");
   container.innerHTML = "";
   document.getElementById("progressCard").style.display = "flex";
 
   sections.forEach(sec => {
-    const rows = list.filter(k => k.s === sec.id);
+    const rows = visibleList.filter(k => k.s === sec.id);
     if(!rows.length) return;
     const editableRows = rows.filter(k => k.kind !== "parent" && k.kind !== "parent_text");
 
@@ -828,6 +820,10 @@ function buildTable() {
       } else if(k.sex === "F") {
         femCell = `<input class="num fem" type="number" min="0" data-code="${k.code}" data-prog="${currentProgram}" data-sex="F" onchange="autoSave()">`;
         masCell = `<span class="na-cell">N/A</span>`;
+        totCell = `<span class="na-cell">—</span>`;
+      } else if(k.sex === "M") {
+        femCell = `<span class="na-cell">N/A</span>`;
+        masCell = `<input class="num mas" type="number" min="0" data-code="${k.code}" data-prog="${currentProgram}" data-sex="M" onchange="autoSave()">`;
         totCell = `<span class="na-cell">—</span>`;
       } else {
         femCell = `<span class="na-cell">N/A</span>`;
@@ -939,25 +935,29 @@ function checkBlocked() {
 async function submitData() {
   if(!currentEntity){showToast("Sélectionnez votre entité","error");return;}
   if(!currentProgram){showToast("Sélectionnez un programme","error");return;}
+  // Verrou envoi unique : si déjà envoyé pour ce contexte, bloquer
+  if(localStorage.getItem(blockedKey())){
+    showToast("Ce formulaire a déjà été envoyé pour cette période.","error");
+    checkBlocked();
+    return;
+  }
   const periodo=document.getElementById("periodo").value;
   const anio=document.getElementById("anio").value;
   const {list}=PROGRAM_DATA[currentProgram];
-  // Build parent label lookup for sub-items
+  const visibleList = list.filter(k => !(currentProgram === "NUT" && isAnemiaHidden(k.code)));
   const parentLabel={};
-  list.forEach(k=>{
+  visibleList.forEach(k=>{
     if(k.kind==="parent"||k.kind==="parent_text") {
-      // store label keyed by base code (strip trailing dots)
       parentLabel[k.code]=k.label;
     }
   });
   function getParentCode(code) {
-    // e.g. "OCU-1.3" -> "OCU-1", "KPI2.1" -> "KPI2"
     const dot = code.lastIndexOf(".");
     return dot>0 ? code.substring(0,dot) : null;
   }
 
   const items=[];
-  list.forEach(k=>{
+  visibleList.forEach(k=>{
     if(k.kind==="parent"||k.kind==="parent_text") return;
     const prog=currentProgram;
     const femEl=document.querySelector(`input.fem[data-code="${k.code}"][data-prog="${prog}"]`);
@@ -971,15 +971,23 @@ async function submitData() {
     const prefixedCode=prefix+"-"+currentEntity+"-"+k.code;
     const isOCU=currentProgram.startsWith("OCU");
     const tipoInd=isOCU?"":k.code.startsWith("KOI")?"KOI":k.code.startsWith("KII")?"KII":k.code.startsWith("KPI-P")?"KPI-P":"KPI";
-    // Full indicator label: for child rows, prepend parent label
     const parentCode=getParentCode(k.code);
     const fullLabel = (k.kind==="child" && parentCode && parentLabel[parentCode])
       ? parentLabel[parentCode]+" · "+k.label
       : k.label;
     const base={Title:prefixedCode,field_1:fullLabel,field_2:tipoInd,field_3:currentEntity,Periodo:periodo,field_4:parseInt(anio),Desgregaci_n:k.desag,Comentario:comment,Fecha_Evento:new Date().toISOString().split(".")[0]+"Z",Entidad:currentEntity,Programa:currentProgram};
-    if(femEl&&femEl.value!=="") items.push({...base,field_6:"Féminin",field_7:parseFloat(femEl.value)});
-    if(masEl&&masEl.value!==""&&k.sex==="FM") items.push({...base,field_6:"Masculin",field_7:parseFloat(masEl.value)});
-    if(totEl&&totEl.value!=="") items.push({...base,field_6:"N/A",field_7:parseFloat(totEl.value)});
+    // Envoi des valeurs : case vide => null (et non plus omise), selon le sexe applicable à l'indicateur
+    function numOrNull(el){ return (el && el.value!=="") ? parseFloat(el.value) : null; }
+    if(k.sex==="FM"){
+      items.push({...base,field_6:"Féminin",field_7:numOrNull(femEl)});
+      items.push({...base,field_6:"Masculin",field_7:numOrNull(masEl)});
+    } else if(k.sex==="F"){
+      items.push({...base,field_6:"Féminin",field_7:numOrNull(femEl)});
+    } else if(k.sex==="M"){
+      items.push({...base,field_6:"Masculin",field_7:numOrNull(masEl)});
+    } else {
+      items.push({...base,field_6:"N/A",field_7:numOrNull(totEl)});
+    }
   });
   if(!items.length){showToast("Aucune valeur saisie","error");return;}
   const btn=document.getElementById("submitBtn");
@@ -1018,9 +1026,7 @@ function showToast(msg,type=""){
     btn.onclick=()=>switchProgram(prog);
     tabs.appendChild(btn);
   });
-  // Also add EVE to NUT SL since it appears in both Pikine and SL
   ENTITY_PROGRAMS["EVE"] = ["NUT"];
-  // initial state
   document.getElementById("tableContainer").innerHTML='<div class="no-program">Sélectionnez votre entité pour afficher les indicateurs.</div>';
 })();
 </script>
